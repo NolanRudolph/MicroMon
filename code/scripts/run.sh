@@ -33,12 +33,12 @@ RUN_CASSANDARA() {
     mkdir $SHARED_DATA
     #rm -rf $SHARED_DATA/*
     #rm -rf $CSRC/data
-    rm -rf $CSRC/data/data
+    rm -rf $CSRC/data/*
     #unlink $CSRC/data
     #unlink $SHARED_DATA
     #ln -s $SHARED_DATA $CSRC/data
     mkdir -p $CSRC/data/data
-    $CSRC/bin/cassandra
+    $CSRC/bin/cassandra -Dcassandra.ignore_dc=true
     #/usr/sbin/cassandra 	
     #/usr/sbin/cassandra "--preferred=1"
     sleep 5
@@ -49,7 +49,7 @@ RUN_YCSB() {
 	cd $YCSBHOME
 
 	#Execute these commands to create ycsb keyspace with cassandra db
-	cqlsh $HOST -e "create keyspace ycsb WITH REPLICATION = {'class' : 'SimpleStrategy', 'replication_factor': 1 }; USE ycsb; create table usertable (y_id varchar primary key, field0 varchar, field1 varchar, field2 varchar,field3 varchar,field4 varchar, field5 varchar, field6 varchar,field7 varchar,field8 varchar,field9 varchar);" #> ~/output
+	cqlsh $HOST -e "create keyspace ycsb WITH REPLICATION = {'class' : 'SimpleStrategy', 'replication_factor': 3 }; USE ycsb; create table usertable (y_id varchar primary key, field0 varchar, field1 varchar, field2 varchar,field3 varchar,field4 varchar, field5 varchar, field6 varchar,field7 varchar,field8 varchar,field9 varchar);" #> ~/output
 
 	#wait
 	sleep 5
@@ -76,5 +76,5 @@ kill -9 `pidof java`
 #Install ycsb and casandara
 sleep 5
 RUN_CASSANDARA
-sleep 30
+sleep 50
 RUN_YCSB

@@ -294,8 +294,9 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
             if (sample == null)
                 sample = maybeNewSample;
         }
+        /*
         // Fat change haha
-        if (host.getHostAddress().compareTo("192.168.1.1") == 0)
+        if (host.getHostAddress().compareTo("192.168.1.2") == 0)
         {
             sample.update(0);
             logger.info("("+host.getHostAddress()+") 0 but is "+ latency);
@@ -305,6 +306,7 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
             sample.update(10000000);
             logger.info("("+host.getHostAddress()+") 10000000 but is "+ latency);
         }
+        */
 
         sample.update(latency);
     }
@@ -350,7 +352,6 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
         // now make another pass to do the weighting based on the maximums we found before
         for (Map.Entry<InetAddress, Snapshot> entry : snapshots.entrySet())
         {
-            /*
             double score = entry.getValue().getMedian() / maxLatency;
 
             // OPTION 1
@@ -375,16 +376,18 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
                 score = 1.0;
             }
             // END OPTION 1
-            */
             // logger.info("Snapshot Values ("+entry.getKey().getHostAddress()+") : " + snapshots.getValues());
+
+            /*
             double score = 0.0;
-            int compare = entry.getKey().getHostAddress().compareTo("192.168.1.1");
+            int compare = entry.getKey().getHostAddress().compareTo("192.168.1.2");
             if (compare == 0)
                 score = 0.0;
             else
                 score = 1.0;
 
             logger.info("(" + entry.getKey().getHostAddress() + ") : " + Double.toString(score));
+            */
 
             newScores.put(entry.getKey(), score);
         }
@@ -433,7 +436,8 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
         {
             for (double time: sample.getSnapshot().getValues())
             {
-                if (hostname.compareTo("192.168.1.1") == 0)
+                /*
+                if (hostname.compareTo("192.168.1.2") == 0)
                 {
                     logger.info("("+hostname+") [0.0] Time : "+time);
                     timings.add(0.0);
@@ -443,7 +447,8 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
                     logger.info("("+hostname+") [1.0] Time : "+time);
                     timings.add(1.0);
                 }
-                //timings.add(time);
+                */
+                timings.add(time);
             }
         }
         return timings;
