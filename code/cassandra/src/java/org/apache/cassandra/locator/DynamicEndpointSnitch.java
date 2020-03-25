@@ -83,14 +83,14 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
         String name;
         String ip;
         Double diskAccess;
-        Double noise;
+        int cache;
 
-        public Node(String n, String IP, Double dA, Double nos)
+        public Node(String n, String IP, Double dA, int c)
         {
             name = n;
             ip = IP;
             diskAccess = dA;
-            noise = nos;
+            cache = c;
         }
     }
 
@@ -120,8 +120,8 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
                 String name  = configParse[0];  // Name of Node
                 String ip    = configParse[1];  // IP of Node
                 Double dA    = Double.parseDouble(configParse[2]);  // Disk Access Time
-                Double noise = Double.parseDouble(configParse[3]);  // Synthetic Noise of Node
-                Node newNode = new Node(name, ip, dA, noise);
+                int cache = Integer.parseInt(configParse[3]);  // Synthetic Noise of Node
+                Node newNode = new Node(name, ip, dA, cache);
 
                 // Store back into nodeConfigs with key being the IP
                 // This allows for easy indexing since this module heavily utilizes IPs
@@ -360,6 +360,7 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
 
             // Divide by maxDiskAccess analagous to the score calculation seen above
             influence += curNode.diskAccess / maxDiskAccess;
+            influence += curNode.cache * 0.05;
 
             // Debugging
             logger.info("(" + entry.getKey().getHostAddress() + ") dA / mA = infl || " + curNode.diskAccess + " / " + maxDiskAccess + " = " + influence);
