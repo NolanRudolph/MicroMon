@@ -58,7 +58,7 @@ RUN_YCSB() {
 	#Wait
 	sleep 5
 	#Run phase
-	$YCSBHOME/bin/ycsb run cassandra-cql -p hosts=$HOST -p port=$PORT -p recordcount=$OPSCNT -P $YCSBHOME/workloads/workloada 
+	$YCSBHOME/bin/ycsb run cassandra-cql -p hosts=$HOST -p port=$PORT -p recordcount=$OPSCNT -P $YCSBHOME/workloads/workloada
 }
 
 FlushDisk()
@@ -76,5 +76,5 @@ kill -9 `pidof java`
 #Install ycsb and casandara
 sleep 5
 RUN_CASSANDARA
-sleep 50
+sleep 60
 RUN_YCSB
