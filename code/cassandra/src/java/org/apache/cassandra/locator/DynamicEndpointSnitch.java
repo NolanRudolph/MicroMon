@@ -76,7 +76,7 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
     private final Runnable update;
     private final Runnable reset;
 
-    // NEW IMPLEMENTATION
+    // EDIT:
     // Stores important attributes about a node
     public class Node
     {
@@ -94,10 +94,12 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
         }
     }
 
+    // EDIT:
     // List to be referenced for updating scores
     HashMap<String, Node> nodeConfigs = new HashMap<String, Node>();
 
-    // Debugging to system.log
+    // EDIT:
+    // DynamicEndpointSnitch now has debugging access to system.log
     protected static final Logger logger = LoggerFactory.getLogger(DynamicEndpointSnitch.class);
 
     public DynamicEndpointSnitch(IEndpointSnitch snitch)
@@ -107,7 +109,9 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
 
     public DynamicEndpointSnitch(IEndpointSnitch snitch, String instance)
     {
-        // NEW IMPLEMENTATION
+        // EDIT:
+        // This gathers all the details from my file pertaining to node
+        // attributes
         try
         {
             File file = new File("cassandra_config.txt");
@@ -236,6 +240,10 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
         sortByProximityWithScore(address, addresses);
     }
 
+    // EDIT: Here all my work below comes into place. The points are being
+    // constantly updated via updateScores(), and when the replication factor
+    // > 1, it is utilized using this method. I've since deleted other sorting
+    // methods such as sortByProximityWithBadness.
     private void sortByProximityWithScore(final InetAddress address, List<InetAddress> addresses)
     {
         // Scores can change concurrently from a call to this method. But Collections.sort() expects
@@ -252,21 +260,19 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
         });
     }
 
-    // Compare endpoints given an immutable snapshot of the scores
+    // EDIT:
+    // Pretty straight forward method, compares two endpoints and takes the
+    // lesser of the two. Called by sortByProximityWithScore()
     private int compareEndpoints(InetAddress target, InetAddress a1, InetAddress a2, Map<InetAddress, Double> scores)
     {
         Double scored1 = scores.get(a1);
         Double scored2 = scores.get(a2);
         
         if (scored1 == null)
-        {
             scored1 = 0.0;
-        }
 
         if (scored2 == null)
-        {
             scored2 = 0.0;
-        }
 
         if (scored1.equals(scored2))
             return subsnitch.compareEndpoints(target, a1, a2);
@@ -284,6 +290,8 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
         throw new UnsupportedOperationException("You shouldn't wrap the DynamicEndpointSnitch (within itself or otherwise)");
     }
 
+    // EDIT:
+    // This is where the system retrieves latency data. I made minor edits
     public void receiveTiming(InetAddress host, long latency) // this is cheap
     {
         ExponentiallyDecayingReservoir sample = samples.get(host);
@@ -295,22 +303,19 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
                 sample = maybeNewSample;
         }
         /*
-        // Fat change haha
+        // INTENSE DEBUGGING - Change 192.168.1.2 to test usage
         if (host.getHostAddress().compareTo("192.168.1.2") == 0)
-        {
             sample.update(0);
-            logger.info("("+host.getHostAddress()+") 0 but is "+ latency);
-        }
         else
-        {
             sample.update(10000000);
-            logger.info("("+host.getHostAddress()+") 10000000 but is "+ latency);
-        }
         */
 
         sample.update(latency);
     }
 
+    // EDIT:
+    // This method holds the most important pieces of code for modifying which
+    // node Cassandra sends to
     private void updateScores() // this is expensive
     {
         if (!StorageService.instance.isGossipActive())
@@ -326,15 +331,18 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
         }
 
         double maxLatency = 1;
+        // Now considering disk access speed
         double maxDiskAccess = 0.0000001;
 
         Map<InetAddress, Snapshot> snapshots = new HashMap<>(samples.size());
+        // Snapshots essentially include metadata about the connections,
+        // including latency and connections
         for (Map.Entry<InetAddress, ExponentiallyDecayingReservoir> entry : samples.entrySet())
         {
             snapshots.put(entry.getKey(), entry.getValue().getSnapshot());
         }
 
-        // We're going to weight the latency for each host against the worst one we see, to
+        // We weight the latency for each host against the worst one we see, to
         // arrive at sort of a 'badness percentage' for them. First, find the worst for each:
         HashMap<InetAddress, Double> newScores = new HashMap<>();
         for (Map.Entry<InetAddress, Snapshot> entry : snapshots.entrySet())
@@ -343,6 +351,7 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
             if (mean > maxLatency)
                 maxLatency = mean;
 
+            // Considering disk access speed as apart of score calculation
             double diskAccess = nodeConfigs.get(entry.getKey().getHostAddress()).diskAccess;
             // A diskAccess of 1.0 is used to denote the host node
             if (diskAccess > maxDiskAccess & diskAccess != 1.0)
@@ -354,12 +363,15 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
         {
             double score = entry.getValue().getMedian() / maxLatency;
 
-            // OPTION 1
+            // Initialize influence and retrieve respective node
             double influence = 0.0; 
             Node curNode = nodeConfigs.get(entry.getKey().getHostAddress());
 
             // Divide by maxDiskAccess analagous to the score calculation seen above
             influence += curNode.diskAccess / maxDiskAccess;
+
+            // I used this method to fiddle with how much the cache influences
+            // the score - I found 0.15 and 0.20 had the most desirable effect
             influence += curNode.cache * 0.05;
 
             // Debugging
@@ -376,18 +388,14 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
             {
                 score = 1.0;
             }
-            // END OPTION 1
-            // logger.info("Snapshot Values ("+entry.getKey().getHostAddress()+") : " + snapshots.getValues());
 
-            /*
+            /* INTENSE DEBUGGING - Replace 192.168.1.2 with IP to see results
             double score = 0.0;
             int compare = entry.getKey().getHostAddress().compareTo("192.168.1.2");
             if (compare == 0)
                 score = 0.0;
             else
                 score = 1.0;
-
-            logger.info("(" + entry.getKey().getHostAddress() + ") : " + Double.toString(score));
             */
 
             newScores.put(entry.getKey(), score);
@@ -399,7 +407,6 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
         {
             logger.info(entry.getKey().getHostAddress() + " : " + entry.getValue());
         }
-        // DEBUGGING END
 
         scores = newScores;
     }
@@ -437,17 +444,11 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
         {
             for (double time: sample.getSnapshot().getValues())
             {
-                /*
+                /* INTENSE DEBUGGING - Replace 192.168.1.2 with IP for results
                 if (hostname.compareTo("192.168.1.2") == 0)
-                {
-                    logger.info("("+hostname+") [0.0] Time : "+time);
                     timings.add(0.0);
-                }
                 else
-                {
-                    logger.info("("+hostname+") [1.0] Time : "+time);
                     timings.add(1.0);
-                }
                 */
                 timings.add(time);
             }
@@ -455,6 +456,9 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
         return timings;
     }
 
+    // EDIT:
+    // This returns whether a range query doing a query against merged is
+    // likely to be faster than 2 sequential queries (i.e. merged vs. l1 + l2)
     public boolean isWorthMergingForRangeQuery(List<InetAddress> merged, List<InetAddress> l1, List<InetAddress> l2)
     {
         // skip checking scores in the single-node case
