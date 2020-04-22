@@ -71,6 +71,7 @@ import org.apache.cassandra.metrics.CassandraMetricsRegistry;
 import org.apache.cassandra.metrics.ConnectionMetrics;
 import org.apache.cassandra.metrics.DroppedMessageMetrics;
 import org.apache.cassandra.metrics.MessagingMetrics;
+import org.apache.cassandra.metrics.DiskAccess;
 import org.apache.cassandra.repair.messages.RepairMessage;
 import org.apache.cassandra.security.SSLFactory;
 import org.apache.cassandra.service.*;
@@ -232,6 +233,7 @@ public final class MessagingService implements MessagingServiceMBean
             }
         },
         PING,
+        DISK_ACCESS,
         // UNUSED verbs were used as padding for backward/forward compatability before 4.0,
         // but it wasn't quite as bullet/future proof as needed. We still need to keep these entries
         // around, at least for a major rev or two (post-4.0). see CASSANDRA-13993 for a discussion.
@@ -311,6 +313,7 @@ public final class MessagingService implements MessagingServiceMBean
         put(Verb.UNUSED_3, Stage.INTERNAL_RESPONSE);
 
         put(Verb.PING, Stage.READ);
+        put(Verb.DISK_ACCESS, Stage.MISC);
     }};
 
     /**
@@ -350,6 +353,7 @@ public final class MessagingService implements MessagingServiceMBean
         put(Verb.BATCH_STORE, Batch.serializer);
         put(Verb.BATCH_REMOVE, UUIDSerializer.serializer);
         put(Verb.PING, PingMessage.serializer);
+        put(Verb.DISK_ACCESS, DiskAccess.serializer);
     }};
 
     /**
