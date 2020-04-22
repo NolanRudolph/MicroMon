@@ -34,49 +34,7 @@ FORMAT_SSD() {
     fi
 }
 
-INSTALL_YCSB() {
-    cd $CODE
-    if [ ! -d "mapkeeper" ]; then
-        git clone https://gitlab.com/sudarsunkannan/mapkeeper
-    fi
-    cp $CODE/xml/thrift/build.properties $CODE/mapkeeper/thrift-0.8.0/lib/java/build.properties	
-    cd $CODE/mapkeeper/ycsb/YCSB
-    mvn clean package
-}
-
-
-INSTALL_CASANDARA_BINARY(){
-
-    mkdir $CODE/cassandra	
-    echo "deb http://www.apache.org/dist/cassandra/debian 311x main" | sudo tee -a /etc/apt/sources.list.d/cassandra.sources.list
-    echo "deb-src http://www.apache.org/dist/cassandra/debian 311x main" | sudo tee -a /etc/apt/sources.list.d/cassandra.sources.list
-
-    gpg --keyserver pgp.mit.edu --recv-keys F758CE318D77295D
-    gpg --export --armor F758CE318D77295D | sudo apt-key add -
-
-    gpg --keyserver pgp.mit.edu --recv-keys 2B5C1B00
-    gpg --export --armor 2B5C1B00 | sudo apt-key add -
-
-    gpg --keyserver pgp.mit.edu --recv-keys 0353B12C
-    gpg --export --armor 0353B12C | sudo apt-key add -
-
-    sudo apt-get update
-    sudo apt-get install -y --force-yes cassandra
-    #RUN_YCSB_CASSANDARA
-}
-
-
-CASANDARA_INSTALL_JAVA(){
-   sudo add-apt-repository ppa:openjdk-r/ppa -y
-   sudo apt-get update
-   sudo apt-get install openjdk-7-jdk -y
-   echo "Now Set the default JAVA version to Open JDK 8"
-   sudo update-alternatives --config java
-   java -version
-}
-
 CASANDARA_SET_ENV() {
-
     export LANG="en_US.UTF-8"
     export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
     export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
@@ -110,13 +68,9 @@ INSTALL_CASANDARA_SOURCE_3.9(){
         INSTALL_CASANDARA_BINARY
     fi
 
-    CASANDARA_INSTALL_JAVA
-
-
     if [ ! -d "apache-cassandra-3.9-src" ]; then
         DOWNLOAD_CASANDARA_SOURCE
     fi	
-
 
     cd apache-cassandra-3.9*
 
@@ -242,15 +196,6 @@ mkdir $CODE
 cd $CODE
 fuser -k $PORT/tcp
 INSTALL_SYSTEM_LIBS
-CASANDARA_INSTALL_JAVA
-INSTALL_CASANDARA_SOURCE
-INSTALL_YCSB
-DESTROY
-
-#INSTALL_PERF_TOOLS
-
-#FORMAT_SSD
-#Install ycsb and casandara
-#RUN_YCSB_CASSANDARA
+#INSTALL_CASANDARA_SOURCE
 #INSTALL_YCSB
-
+DESTROY

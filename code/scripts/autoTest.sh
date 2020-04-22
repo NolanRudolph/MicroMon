@@ -18,10 +18,10 @@ DESTROY() {
 	sudo killall java
 	sleep 2
 
-    # Clear cache
-    echo "Clearing Cache..."
-    FlushDisk
-    sleep 5
+  # Clear cache
+  echo "Clearing Cache..."
+  FlushDisk
+  sleep 5
 }
 
 
@@ -49,22 +49,24 @@ RUN_YCSB() {
 	cd $YCSBHOME
 	sleep 5
 
-	#Warm up phase. Load the db
-    python ~/MultiDimMonitor/Cassandra/fill_database.py
-	sleep 5
+  # Create keyspace
+  $CSRC/bin/cqlsh $HOST -e "create keyspace ycsb WITH REPLICATION = {'class'
+  : 'SimpleStrategy', 'replication_factor': 2 }; 
+  USE ycsb; 
+  create table usertable (y_id varchar primary key, field0 varchar, field1 varchar, field2
+  varchar,field3 varchar,field4 varchar, field5 varchar, field6 varchar,field7
+  varchar,field8 varchar,field9 varchar);"
 
-	#Run phase
-    for i in {1..50}
-    do
-        printf "Iteration %d\n", $i
-        if ! (( $i % 2 ))
-        then
-            python ~/MultiDimMonitor/Cassandra/synch_test.py 192.168.1.2
-        else
-            python ~/MultiDimMonitor/Cassandra/synch_test.py 192.168.1.3
-        fi
-        sleep 3
-    done
+  sleep 5
+
+  # Warmup Phase
+  $YCSBHOME/bin/ycsb load cassandra2 -p hosts=$HOST -p port=$PORT -p recordcount=$OPSCNT -P $YCSBHOME/workloads/workloada -s
+
+  sleep 5
+
+  # Run Phase
+  $YCSBHOME/bin/ycsb run cassandra2-cql -p hosts=$HOST -p port=$PORT -p recordcount=$OPSCNT -P $YCSBHOME/workloads/workloada  
+
 }
 
 FlushDisk()
