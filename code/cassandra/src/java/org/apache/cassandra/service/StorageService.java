@@ -85,6 +85,7 @@ import org.apache.cassandra.schema.SchemaKeyspace;
 import org.apache.cassandra.service.paxos.CommitVerbHandler;
 import org.apache.cassandra.service.paxos.PrepareVerbHandler;
 import org.apache.cassandra.service.paxos.ProposeVerbHandler;
+import org.apache.cassandra.metrics.DiskAccessVerbHandler;
 import org.apache.cassandra.streaming.*;
 import org.apache.cassandra.thrift.EndpointDetails;
 import org.apache.cassandra.thrift.TokenRange;
@@ -298,6 +299,7 @@ public class StorageService extends NotificationBroadcasterSupport implements IE
 
         MessagingService.instance().registerVerbHandlers(MessagingService.Verb.BATCH_STORE, new BatchStoreVerbHandler());
         MessagingService.instance().registerVerbHandlers(MessagingService.Verb.BATCH_REMOVE, new BatchRemoveVerbHandler());
+        MessagingService.instance().registerVerbHandlers(MessagingService.Verb.DISK_ACCESS, new DiskAccessVerbHandler());
     }
 
     public void registerDaemon(CassandraDaemon daemon)

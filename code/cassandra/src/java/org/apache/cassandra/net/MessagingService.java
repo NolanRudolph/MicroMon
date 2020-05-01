@@ -381,6 +381,7 @@ public final class MessagingService implements MessagingServiceMBean
 
         put(Verb.BATCH_STORE, WriteResponse.serializer);
         put(Verb.BATCH_REMOVE, WriteResponse.serializer);
+	put(Verb.DISK_ACCESS, DiskAccess.serializer);
     }};
 
     /* This records all the results mapped by message Id */
@@ -659,7 +660,7 @@ public final class MessagingService implements MessagingServiceMBean
      */
     public void convict(InetAddress ep)
     {
-        logger.trace("Resetting pool for {}", ep);
+        logger.info("Resetting pool for {}", ep);
         getConnectionPool(ep).reset();
     }
 
@@ -766,7 +767,7 @@ public final class MessagingService implements MessagingServiceMBean
         }
         catch (InterruptedException ie)
         {
-            logger.trace("await interrupted");
+            logger.info("await interrupted");
         }
     }
 
@@ -974,10 +975,10 @@ public final class MessagingService implements MessagingServiceMBean
         logger.info("   Caller: " + stack[3].getFileName() + " @ Line " + stack[3].getLineNumber() + ", Method: " + stack[3].getMethodName());
         logger.info("*************************************************************");
         if (logger.isTraceEnabled())
-            logger.trace("{} sending {} to {}@{}", FBUtilities.getBroadcastAddress(), message.verb, id, to);
+            logger.info("{} sending {} to {}@{}", FBUtilities.getBroadcastAddress(), message.verb, id, to);
 
         if (to.equals(FBUtilities.getBroadcastAddress()))
-            logger.trace("Message-to-self {} going over MessagingService", message);
+            logger.info("Message-to-self {} going over MessagingService", message);
 
         // message sinks are a testing hook
         for (IMessageSink ms : messageSinks)
@@ -1128,7 +1129,7 @@ public final class MessagingService implements MessagingServiceMBean
      */
     public int setVersion(InetAddress endpoint, int version)
     {
-        logger.trace("Setting version {} for {}", version, endpoint);
+        logger.info("Setting version {} for {}", version, endpoint);
 
         if (version < VERSION_22)
             allNodesAtLeast22 = false;
@@ -1146,7 +1147,7 @@ public final class MessagingService implements MessagingServiceMBean
 
     public void resetVersion(InetAddress endpoint)
     {
-        logger.trace("Resetting version for {}", endpoint);
+        logger.info("Resetting version for {}", endpoint);
         Integer removed = versions.remove(endpoint);
         if (removed != null && Math.min(removed, current_version) <= VERSION_30)
             refreshAllNodeMinVersions();
@@ -1183,7 +1184,7 @@ public final class MessagingService implements MessagingServiceMBean
         if (v == null)
         {
             // we don't know the version. assume current. we'll know soon enough if that was incorrect.
-            logger.trace("Assuming current protocol version for {}", endpoint);
+            logger.info("Assuming current protocol version for {}", endpoint);
             return MessagingService.current_version;
         }
         else
@@ -1343,7 +1344,7 @@ public final class MessagingService implements MessagingServiceMBean
                     socket = server.accept();
                     if (!authenticate(socket))
                     {
-                        logger.trace("remote failed to authenticate");
+                        logger.info("remote failed to authenticate");
                         socket.close();
                         continue;
                     }
@@ -1356,7 +1357,7 @@ public final class MessagingService implements MessagingServiceMBean
                     int header = in.readInt();
                     boolean isStream = MessagingService.getBits(header, 3, 1) == 1;
                     int version = MessagingService.getBits(header, 15, 8);
-                    logger.trace("Connection version {} from {}", version, socket.getInetAddress());
+                    logger.info("Connection version {} from {}", version, socket.getInetAddress());
                     socket.setSoTimeout(0);
 
                     Thread thread = isStream
@@ -1368,12 +1369,12 @@ public final class MessagingService implements MessagingServiceMBean
                 catch (AsynchronousCloseException e)
                 {
                     // this happens when another thread calls close().
-                    logger.trace("Asynchronous close seen by server thread");
+                    logger.info("Asynchronous close seen by server thread");
                     break;
                 }
                 catch (ClosedChannelException e)
                 {
-                    logger.trace("MessagingService server thread already closed");
+                    logger.info("MessagingService server thread already closed");
                     break;
                 }
                 catch (SSLHandshakeException e)
@@ -1383,7 +1384,7 @@ public final class MessagingService implements MessagingServiceMBean
                 }
                 catch (Throwable t)
                 {
-                    logger.trace("Error reading the socket {}", socket, t);
+                    logger.info("Error reading the socket {}", socket, t);
                     FileUtils.closeQuietly(socket);
                 }
             }
@@ -1392,7 +1393,7 @@ public final class MessagingService implements MessagingServiceMBean
 
         void close() throws IOException
         {
-            logger.trace("Closing accept() thread");
+            logger.info("Closing accept() thread");
 
             try
             {

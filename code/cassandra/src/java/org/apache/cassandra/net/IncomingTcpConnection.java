@@ -196,6 +196,7 @@ public class IncomingTcpConnection extends FastThreadLocalThread implements Clos
         if (message == null)
         {
             // callback expired; nothing to do
+	    logger.info("-=-=-=-=-=-=-=-=-=-=-GOT A NULL MESSAGE-=-=-=-=-=-=--=-=-=-=-");
             return null;
         }
         if (version <= MessagingService.current_version)
@@ -204,6 +205,7 @@ public class IncomingTcpConnection extends FastThreadLocalThread implements Clos
         }
         else
         {
+	    logger.info("-=-=-=-=-=-=-=-=-=-=-DROPPED MESSAGE DUE TO VERSION-=-=-=-=-=-=--=-=-=-=-");
             logger.trace("Received connection from newer protocol version {}. Ignoring message", version);
         }
         return message.from;
