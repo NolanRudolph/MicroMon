@@ -34,9 +34,10 @@ public class DiskAccessVerbHandler implements IVerbHandler<DiskAccess>
     {
         DiskAccess payload = message.payload;
         logger.info("@@@@@@@@@@ GOT MESSAGE WITH PAYLOAD : " + payload.latency + "@@@@@@@@@@@@@");
-	DiskAccess retPayload = new DiskAccess(69.69);
+	DiskAccess retPayload = new DiskAccess(false, 69.69);
 	DiskAccessSerializer serializer = new DiskAccessSerializer();
+	MessageOut<DiskAccess> reply = new MessageOut<DiskAccess>(MessagingService.Verb.DISK_ACCESS, retPayload, serializer);
 
-        MessagingService.instance().sendReply(new MessageOut<DiskAccess>(MessagingService.Verb.REQUEST_RESPONSE, retPayload, serializer), id, message.from);
+        MessagingService.instance().sendReply(reply, id, message.from);
     }
 }

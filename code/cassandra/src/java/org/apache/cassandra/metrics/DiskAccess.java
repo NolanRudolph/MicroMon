@@ -35,10 +35,12 @@ public class DiskAccess
 
     public static final DiskAccessSerializer serializer = new DiskAccessSerializer();
 
+    public final boolean isHost;
     public final double latency;
 
-    public DiskAccess(double diskAccessTime)
+    public DiskAccess(boolean host, double diskAccessTime)
     {
+      this.isHost = host;
       this.latency = diskAccessTime;
     }
 
@@ -53,19 +55,22 @@ class DiskAccessSerializer implements IVersionedSerializer<DiskAccess>
 {
     public void serialize(DiskAccess diskAccess, DataOutputPlus out, int version) throws IOException
     {
+	out.writeUTF(Boolean.toString(diskAccess.isHost));
         out.writeUTF(Double.toString(diskAccess.latency));
     }
 
     public DiskAccess deserialize(DataInputPlus in, int version) throws IOException
     {
+	boolean isHost = Boolean.parseBoolean(in.readUTF());
         Double diskLatency = Double.parseDouble(in.readUTF());
-        return new DiskAccess(diskLatency);
+        return new DiskAccess(isHost, diskLatency);
     }
 
     public long serializedSize(DiskAccess da, int version)
     {
 	long size = 1; // message type (single byte)
         size += (long) Double.BYTES;
+        size += 1; // sizeof boolean
 	return size;
     }
 }
