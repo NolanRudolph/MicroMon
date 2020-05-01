@@ -35,8 +35,13 @@ import org.apache.cassandra.tracing.Tracing;
 import org.apache.cassandra.utils.FBUtilities;
 import static org.apache.cassandra.tracing.Tracing.isTracing;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class MessageOut<T>
 {
+    protected static final Logger logger = LoggerFactory.getLogger(MessageOut.class);
+
     public final InetAddress from;
     public final MessagingService.Verb verb;
     public final T payload;
@@ -59,6 +64,12 @@ public class MessageOut<T>
              isTracing()
                  ? Tracing.instance.getTraceHeaders()
                  : Collections.<String, byte[]>emptyMap());
+        StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+        logger.info("**************** MessageOut - Constructor ******************");
+        logger.info("message verb: " + verb);
+        logger.info("Caller: " + stack[2].getFileName() + " @ Line " + stack[2].getLineNumber() + ", Method: " + stack[2].getMethodName());
+        logger.info("   Caller: " + stack[3].getFileName() + " @ Line " + stack[3].getLineNumber() + ", Method: " + stack[3].getMethodName());
+        logger.info("*************************************************************");
     }
 
     private MessageOut(MessagingService.Verb verb, T payload, IVersionedSerializer<T> serializer, Map<String, byte[]> parameters)
@@ -69,6 +80,12 @@ public class MessageOut<T>
     @VisibleForTesting
     public MessageOut(InetAddress from, MessagingService.Verb verb, T payload, IVersionedSerializer<T> serializer, Map<String, byte[]> parameters)
     {
+        StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+        logger.info("**************** MessageOut - Constructor2 ******************");
+        logger.info("message verb: " + verb);
+        logger.info("Caller: " + stack[2].getFileName() + " @ Line " + stack[2].getLineNumber() + ", Method: " + stack[2].getMethodName());
+        logger.info("   Caller: " + stack[3].getFileName() + " @ Line " + stack[3].getLineNumber() + ", Method: " + stack[3].getMethodName());
+        logger.info("*************************************************************");
         this.from = from;
         this.verb = verb;
         this.payload = payload;
@@ -102,6 +119,12 @@ public class MessageOut<T>
 
     public void serialize(DataOutputPlus out, int version) throws IOException
     {
+        StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+        logger.info("************** MessagingService - serialize ****************");
+        logger.info("Caller: " + stack[2].getFileName() + " @ Line " + stack[2].getLineNumber() + ", Method: " + stack[2].getMethodName());
+        logger.info("   Caller: " + stack[3].getFileName() + " @ Line " + stack[3].getLineNumber() + ", Method: " + stack[3].getMethodName());
+        logger.info("*************************************************************");
+
         CompactEndpointSerializationHelper.serialize(from, out);
 
         out.writeInt(MessagingService.Verb.convertForMessagingServiceVersion(verb, version).ordinal());

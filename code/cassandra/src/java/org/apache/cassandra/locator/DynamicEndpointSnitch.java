@@ -47,6 +47,8 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import org.apache.cassandra.net.MessageOut;
 import org.apache.cassandra.net.MessageIn;
+import org.apache.cassandra.net.MessagingService;
+import org.apache.cassandra.net.MessageDeliveryTask;
 import org.apache.cassandra.metrics.DiskAccess;
 
 
@@ -298,8 +300,14 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
     {
 	// Create a new message to retrieve Disk Access time
 	DiskAccess request = new DiskAccess(0.69);
-	request.createMessage();
-	// MessageOut<DiskAccess> message = new MessageOut<DiskAccess>(MessagingService.Verb.DISK_ACCESS, _, DiskAccess.serializer);
+	MessageOut<DiskAccess> message = request.createMessage();
+	
+	// Loop through all addresses and request disk access information
+	for (Map.Entry<InetAddress, ExponentiallyDecayingReservoir> entry : samples.entrySet())
+	{
+	    MessagingService.instance().sendOneWay(message, entry.getKey());
+	}
+
 
         if (!StorageService.instance.isGossipActive())
             return;

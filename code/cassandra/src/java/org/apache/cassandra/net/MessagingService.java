@@ -943,12 +943,6 @@ public final class MessagingService implements MessagingServiceMBean
 
     public void sendOneWay(MessageOut message, InetAddress to)
     {
-        StackTraceElement[] stack = Thread.currentThread().getStackTrace();
-        logger.info("************** MessagingService - sendOneWay ****************");
-	logger.info("to: " + to.getHostAddress());
-        logger.info("Caller: " + stack[2].getFileName() + " @ Line " + stack[2].getLineNumber() + ", Method: " + stack[2].getMethodName());
-        logger.info("   Caller: " + stack[3].getFileName() + " @ Line " + stack[3].getLineNumber() + ", Method: " + stack[3].getMethodName());
-        logger.info("*************************************************************");
         sendOneWay(message, nextId(), to);
     }
 

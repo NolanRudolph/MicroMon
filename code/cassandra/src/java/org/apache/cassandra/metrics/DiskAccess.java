@@ -25,8 +25,13 @@ import org.apache.cassandra.io.util.DataOutputPlus;
 import org.apache.cassandra.net.MessageOut;
 import org.apache.cassandra.net.MessagingService;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class DiskAccess
 {
+    protected static final Logger logger = LoggerFactory.getLogger(DiskAccess.class);
+
     public static final DiskAccessSerializer serializer = new DiskAccessSerializer();
 
     public final double latency;
@@ -38,6 +43,7 @@ public class DiskAccess
 
     public MessageOut createMessage()
     {
+	logger.info("@@@ DISK ACCESS MESSAGE OUT w/ LATENCY: {} @@@", Double.toString(this.latency));
         return new MessageOut<DiskAccess>(MessagingService.Verb.DISK_ACCESS, this, serializer);
     }
 }

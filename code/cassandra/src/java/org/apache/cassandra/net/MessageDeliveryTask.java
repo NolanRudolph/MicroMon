@@ -45,6 +45,13 @@ public class MessageDeliveryTask implements Runnable
 
     public void run()
     {
+        StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+        logger.info("*************** MessagingService - run *****************");
+        logger.info("message verb: " + this.message.verb);
+        logger.info("id: " + Integer.toString(this.id));
+        logger.info("Caller: " + stack[2].getFileName() + " @ Line " + stack[2].getLineNumber() + ", Method: " + stack[2].getMethodName());
+        logger.info("   Caller: " + stack[3].getFileName() + " @ Line " + stack[3].getLineNumber() + ", Method: " + stack[3].getMethodName());
+        logger.info("*************************************************************");
         MessagingService.Verb verb = message.verb;
         long timeTaken = message.getLifetimeInMS();
         if (MessagingService.DROPPABLE_VERBS.contains(verb)
