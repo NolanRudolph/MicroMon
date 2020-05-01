@@ -828,6 +828,12 @@ public final class MessagingService implements MessagingServiceMBean
      */
     public IVerbHandler getVerbHandler(Verb type)
     {
+        StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+        logger.info("************ MessagingService - getVerbHandler **************");
+	logger.info("Getting verbhandler for " + verbHandlers.get(type));
+        logger.info("Caller: " + stack[2].getFileName() + " @ Line " + stack[2].getLineNumber() + ", Method: " + stack[2].getMethodName());
+        logger.info("   Caller: " + stack[3].getFileName() + " @ Line " + stack[3].getLineNumber() + ", Method: " + stack[3].getMethodName());
+        logger.info("*************************************************************");
         return verbHandlers.get(type);
     }
 
@@ -873,6 +879,12 @@ public final class MessagingService implements MessagingServiceMBean
 
     public int sendRR(MessageOut message, InetAddress to, IAsyncCallback cb)
     {
+        StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+        logger.info("************* MessagingService - sendRR (Mut) ***************");
+	logger.info("to: (" + to.getHostAddress() + ")");
+        logger.info("Caller: " + stack[2].getFileName() + " @ Line " + stack[2].getLineNumber() + ", Method: " + stack[2].getMethodName());
+        logger.info("   Caller: " + stack[3].getFileName() + " @ Line " + stack[3].getLineNumber() + ", Method: " + stack[3].getMethodName());
+        logger.info("*************************************************************");
         return sendRR(message, to, cb, message.getTimeout(), false);
     }
 
@@ -894,6 +906,12 @@ public final class MessagingService implements MessagingServiceMBean
      */
     public int sendRR(MessageOut message, InetAddress to, IAsyncCallback cb, long timeout, boolean failureCallback)
     {
+        StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+        logger.info("*********** MessagingService - sendRR (non-Mut) *************");
+	logger.info("to: (" + to.getHostAddress() + ")");
+        logger.info("Caller: " + stack[2].getFileName() + " @ Line " + stack[2].getLineNumber() + ", Method: " + stack[2].getMethodName());
+        logger.info("   Caller: " + stack[3].getFileName() + " @ Line " + stack[3].getLineNumber() + ", Method: " + stack[3].getMethodName());
+        logger.info("*************************************************************");
         int id = addCallback(cb, message, to, timeout, failureCallback);
         updateBackPressureOnSend(to, cb, message);
         sendOneWay(failureCallback ? message.withParameter(FAILURE_CALLBACK_PARAM, ONE_BYTE) : message, id, to);
@@ -925,11 +943,23 @@ public final class MessagingService implements MessagingServiceMBean
 
     public void sendOneWay(MessageOut message, InetAddress to)
     {
+        StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+        logger.info("************** MessagingService - sendOneWay ****************");
+	logger.info("to: " + to.getHostAddress());
+        logger.info("Caller: " + stack[2].getFileName() + " @ Line " + stack[2].getLineNumber() + ", Method: " + stack[2].getMethodName());
+        logger.info("   Caller: " + stack[3].getFileName() + " @ Line " + stack[3].getLineNumber() + ", Method: " + stack[3].getMethodName());
+        logger.info("*************************************************************");
         sendOneWay(message, nextId(), to);
     }
 
     public void sendReply(MessageOut message, int id, InetAddress to)
     {
+        StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+        logger.info("************** MessagingService - sendReply ****************");
+	logger.info("to: " + to.getHostAddress());
+        logger.info("Caller: " + stack[2].getFileName() + " @ Line " + stack[2].getLineNumber() + ", Method: " + stack[2].getMethodName());
+        logger.info("   Caller: " + stack[3].getFileName() + " @ Line " + stack[3].getLineNumber() + ", Method: " + stack[3].getMethodName());
+        logger.info("*************************************************************");
         sendOneWay(message, id, to);
     }
 
@@ -942,6 +972,13 @@ public final class MessagingService implements MessagingServiceMBean
      */
     public void sendOneWay(MessageOut message, int id, InetAddress to)
     {
+        StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+        logger.info("*********** MessagingService - sendOneWay (ID) *************");
+	logger.info("to: " + to.getHostAddress());
+	logger.info("id: " + Integer.toString(id));
+        logger.info("Caller: " + stack[2].getFileName() + " @ Line " + stack[2].getLineNumber() + ", Method: " + stack[2].getMethodName());
+        logger.info("   Caller: " + stack[3].getFileName() + " @ Line " + stack[3].getLineNumber() + ", Method: " + stack[3].getMethodName());
+        logger.info("*************************************************************");
         if (logger.isTraceEnabled())
             logger.trace("{} sending {} to {}@{}", FBUtilities.getBroadcastAddress(), message.verb, id, to);
 
@@ -1023,6 +1060,15 @@ public final class MessagingService implements MessagingServiceMBean
 
     public void receive(MessageIn message, int id)
     {
+
+        StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+        logger.info("*************** MessagingService - receive *****************");
+	logger.info("message verb: " + message.verb);
+	logger.info("id: " + Integer.toString(id));
+        logger.info("Caller: " + stack[2].getFileName() + " @ Line " + stack[2].getLineNumber() + ", Method: " + stack[2].getMethodName());
+        logger.info("   Caller: " + stack[3].getFileName() + " @ Line " + stack[3].getLineNumber() + ", Method: " + stack[3].getMethodName());
+        logger.info("*************************************************************");
+
         TraceState state = Tracing.instance.initializeFromMessage(message);
         if (state != null)
             state.trace("{} message received from {}", message.verb, message.from);
