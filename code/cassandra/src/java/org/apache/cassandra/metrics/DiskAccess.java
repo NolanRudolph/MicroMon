@@ -24,6 +24,7 @@ import org.apache.cassandra.io.util.DataInputPlus;
 import org.apache.cassandra.io.util.DataOutputPlus;
 import org.apache.cassandra.net.MessageOut;
 import org.apache.cassandra.net.MessagingService;
+import org.apache.cassandra.db.TypeSizes;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +64,8 @@ class DiskAccessSerializer implements IVersionedSerializer<DiskAccess>
 
     public long serializedSize(DiskAccess da, int version)
     {
-        return (long) Double.BYTES;
+	long size = 1; // message type (single byte)
+        size += (long) Double.BYTES;
+	return size;
     }
 }
