@@ -20,10 +20,12 @@ package org.apache.cassandra.locator;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.*;
+import java.lang.System;
+import java.io.*;
 
 import com.codahale.metrics.ExponentiallyDecayingReservoir;
 
@@ -35,21 +37,16 @@ import org.apache.cassandra.gms.EndpointState;
 import org.apache.cassandra.gms.Gossiper;
 import org.apache.cassandra.gms.VersionedValue;
 import org.apache.cassandra.net.MessagingService;
+import org.apache.cassandra.net.MessageOut;
+import org.apache.cassandra.net.MessageIn;
+import org.apache.cassandra.net.MessageDeliveryTask;
 import org.apache.cassandra.service.StorageService;
 import org.apache.cassandra.utils.FBUtilities;
 import org.apache.cassandra.utils.MBeanWrapper;
+import org.apache.cassandra.metrics.DiskAccess;
 
-// Debugging Imports
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-// New Implementation Imports
-import java.io.*;
-import org.apache.cassandra.net.MessageOut;
-import org.apache.cassandra.net.MessageIn;
-import org.apache.cassandra.net.MessagingService;
-import org.apache.cassandra.net.MessageDeliveryTask;
-import org.apache.cassandra.metrics.DiskAccess;
 
 
 /**
@@ -71,6 +68,7 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
     private boolean registered = false;
 
     private volatile HashMap<InetAddress, Double> scores = new HashMap<>();
+    public static HashMap<InetAddress, Double> diskAccess = new HashMap<>();
     private final ConcurrentHashMap<InetAddress, ExponentiallyDecayingReservoir> samples = new ConcurrentHashMap<>();
 
     public final IEndpointSnitch subsnitch;
@@ -81,7 +79,7 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
     private final Runnable update;
     private final Runnable reset;
 
-    public static HashMap<InetAddress, Double> diskAccess = new HashMap<>();
+    private long timer = System.currentTimeMillis();
 
     // EDIT:
     // Stores important attributes about a node
@@ -300,17 +298,6 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
 
     private void updateScores() // this is expensive
     {
-	// Create a new message to retrieve Disk Access time
-	DiskAccess request = new DiskAccess(true, 0.69);
-	MessageOut<DiskAccess> message = request.createMessage();
-	
-	// Loop through all addresses and request disk access information
-	for (Map.Entry<InetAddress, ExponentiallyDecayingReservoir> entry : samples.entrySet())
-	{
-	    MessagingService.instance().sendOneWay(message, entry.getKey());
-	}
-
-
         if (!StorageService.instance.isGossipActive())
             return;
         if (!registered)
@@ -322,6 +309,23 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
             }
 
         }
+
+	// Lots of overhead, so set to occur every 5s
+	if (System.currentTimeMillis() - timer > 5000)
+	{
+		// Reset timer to 5 minutes
+		timer = System.currentTimeMillis();
+
+		// Create a new message to retrieve Disk Access time
+		DiskAccess request = new DiskAccess(true, 0.69);
+		MessageOut<DiskAccess> message = request.createMessage();
+		
+		// Loop through all addresses and request disk access information
+		for (Map.Entry<InetAddress, ExponentiallyDecayingReservoir> entry : samples.entrySet())
+		{
+		    MessagingService.instance().sendOneWay(message, entry.getKey());
+		}
+	}
 
         double maxLatency = 1;
 
