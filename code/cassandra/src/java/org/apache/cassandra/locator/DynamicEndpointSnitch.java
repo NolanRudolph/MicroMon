@@ -299,7 +299,7 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
     private void updateScores() // this is expensive
     {
 	// Create a new message to retrieve Disk Access time
-	DiskAccess request = new DiskAccess(0.69);
+	DiskAccess request = new DiskAccess(true, 0.69);
 	MessageOut<DiskAccess> message = request.createMessage();
 	
 	// Loop through all addresses and request disk access information
