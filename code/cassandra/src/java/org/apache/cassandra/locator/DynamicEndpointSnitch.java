@@ -81,6 +81,8 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
     private final Runnable update;
     private final Runnable reset;
 
+    public static HashMap<InetAddress, Double> diskAccess = new HashMap<>();
+
     // EDIT:
     // Stores important attributes about a node
     public class Node
@@ -362,6 +364,11 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
         // DEBUGGING
         logger.info("SCORES");
         for (Map.Entry<InetAddress, Double> entry : newScores.entrySet())
+        {
+            logger.info(entry.getKey().getHostAddress() + " : " + entry.getValue());
+        }
+        logger.info("DISK ACCESS");
+        for (Map.Entry<InetAddress, Double> entry : diskAccess.entrySet())
         {
             logger.info(entry.getKey().getHostAddress() + " : " + entry.getValue());
         }

@@ -20,6 +20,7 @@ package org.apache.cassandra.metrics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.apache.cassandra.locator.DynamicEndpointSnitch;
 import org.apache.cassandra.metrics.DiskAccess;
 import org.apache.cassandra.net.IVerbHandler;
 import org.apache.cassandra.net.MessageIn;
@@ -33,7 +34,6 @@ public class DiskAccessVerbHandler implements IVerbHandler<DiskAccess>
     public void doVerb(MessageIn<DiskAccess> message, int id)
     {
         DiskAccess payload = message.payload;
-        logger.info("@@@@@@@@@@ GOT MESSAGE WITH PAYLOAD : " + payload.latency + "@@@@@@@@@@@@@");
 	if (payload.isHost)
 	{
 		DiskAccess retPayload = new DiskAccess(false, 69.69);
@@ -41,6 +41,11 @@ public class DiskAccessVerbHandler implements IVerbHandler<DiskAccess>
 		MessageOut<DiskAccess> reply = new MessageOut<DiskAccess>(MessagingService.Verb.DISK_ACCESS, retPayload, serializer);
 
 		MessagingService.instance().sendReply(reply, id, message.from);
+	}
+	else
+	{
+		logger.info("@@@@@@@@@@ GOT MESSAGE WITH PAYLOAD : " + payload.latency + "@@@@@@@@@@@@@");
+		DynamicEndpointSnitch.diskAccess.put(message.from, payload.latency);
 	}
     }
 }
