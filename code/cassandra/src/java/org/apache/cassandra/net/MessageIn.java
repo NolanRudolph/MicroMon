@@ -32,8 +32,13 @@ import org.apache.cassandra.io.IVersionedSerializer;
 import org.apache.cassandra.io.util.DataInputBuffer;
 import org.apache.cassandra.io.util.DataInputPlus;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class MessageIn<T>
 {
+    private static final Logger logger = LoggerFactory.getLogger(MessageIn.class);
+
     public final InetAddress from;
     public final T payload;
     public final Map<String, byte[]> parameters;
@@ -85,6 +90,7 @@ public class MessageIn<T>
         InetAddress from = CompactEndpointSerializationHelper.deserialize(in);
 
         MessagingService.Verb verb = MessagingService.verbValues[in.readInt()];
+	logger.info("@*@*@*@*@* MESSAGEIN - READ ; from: (" + from.getHostAddress() + ") ; verb: " + verb + " *@*@*@*@*@");
         int parameterCount = in.readInt();
         Map<String, byte[]> parameters;
         if (parameterCount == 0)
