@@ -381,13 +381,12 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
         // now make another pass to do the weighting based on the maximums we found before
         for (Map.Entry<InetAddress, Snapshot> entry : snapshots.entrySet())
         {
-            double score = (entry.getValue().getMedian() / maxNWL) * (2/3);
-            double influence = (diskAccess.get(entry.getKey()) / maxDAL) * (1/3);
+            double score = (entry.getValue().getMedian() / maxNWL) * (2.0/3.0);
+            double influence = (diskAccess.get(entry.getKey()) / maxDAL) * (1.0/3.0);
 
             logger.info("(" + entry.getKey().getHostAddress() + ") " 
                         + "Initial Score: " + Double.toString(score) + " | "
                         + "Influenced Score: " + Double.toString(score + influence));
-            logger.info("(CDL / WDL) * (1/3) = ({} / {}) * (1/3) = {}", diskAccess.get(entry.getKey()), maxDAL, ((diskAccess.get(entry.getKey()) / maxDAL) + influence) * (1/3));
 
             score += influence;
 
