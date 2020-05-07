@@ -387,6 +387,13 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
             logger.info("(" + entry.getKey().getHostAddress() + ") " 
                         + "Initial Score: " + Double.toString(score) + " | "
                         + "Influenced Score: " + Double.toString(score + influence));
+            logger.info("(" + entry.getKey().getHostAddress() + ") " 
+                        + "Network Latency: " + Double.toString(entry.getValue().getMedian()) + " | "
+                        + "maxNWL: " + Double.toString(maxNWL) + " |  ("
+                        + Double.toString(entry.getValue().getMedian()) + " / " + Double.toString(maxNWL) + ") * 0.5 = " + Double.toString(((entry.getValue().getMedian()) / maxNWL) * 0.5) + " | "
+                        + "Disk Access Latency: " + diskAccess.get(entry.getKey()) + " | "
+                        + "maxDAL: " + Double.toString(maxDAL) + " |  ("
+                        + diskAccess.get(entry.getKey()) + " / " + Double.toString(maxDAL) + ") * 0.5 = " + Double.toString((diskAccess.get(entry.getKey()) / maxDAL) * 0.5));
 
             score += influence;
 
