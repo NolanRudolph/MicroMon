@@ -296,6 +296,8 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
         sample.update(latency);
     }
 
+    // NWL: Network Latency
+    // DAL: Disk Access Latency
     private void updateScores() // this is expensive
     {
         if (!StorageService.instance.isGossipActive())
@@ -310,24 +312,43 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
 
         }
 
-	// Lots of overhead, so set to occur every 5s
-	if (System.currentTimeMillis() - timer > 5000)
-	{
-		// Reset timer to 5 minutes
-		timer = System.currentTimeMillis();
+        // Lots of overhead, so set to occur every 5s
+        if (System.currentTimeMillis() - timer > 5000)
+        {
+            // Reset timer to 5 minutes
+            timer = System.currentTimeMillis();
 
-		// Create a new message to retrieve Disk Access time
-		DiskAccess request = new DiskAccess(true, 0.69);
-		MessageOut<DiskAccess> message = request.createMessage();
-		
-		// Loop through all addresses and request disk access information
-		for (Map.Entry<InetAddress, ExponentiallyDecayingReservoir> entry : samples.entrySet())
-		{
-		    MessagingService.instance().sendOneWay(message, entry.getKey());
-		}
-	}
+            double myDAL = 0.0;
+            // Retrieve current disk access to tell other nodes
+            try
+            {
+                File file = new File("/users/NolanR/diskAccess.txt");
+                BufferedReader br = new BufferedReader(new FileReader(file));
+                myDAL = Double.parseDouble(br.readLine());
+            }
+            catch (Exception e)
+            {
+                logger.error("ERROR : " + e);
+            }
+            
 
-        double maxLatency = 1;
+            // Create a new message to retrieve Disk Access time from other nodes
+            // Note: This also informs said nodes about this nodes own DAL
+            DiskAccess request = new DiskAccess(true, myDAL);
+            MessageOut<DiskAccess> message = request.createMessage();
+            
+            // Loop through all addresses and request disk access information
+            for (Map.Entry<InetAddress, ExponentiallyDecayingReservoir> entry : samples.entrySet())
+            {
+                if (!diskAccess.containsKey(entry.getKey()))
+                    diskAccess.put(entry.getKey(), -1.0);
+
+                MessagingService.instance().sendOneWay(message, entry.getKey());
+            }
+        }
+
+        double maxNWL = 1;
+        double maxDAL = 0.0000001;
 
         Map<InetAddress, Snapshot> snapshots = new HashMap<>(samples.size());
         for (Map.Entry<InetAddress, ExponentiallyDecayingReservoir> entry : samples.entrySet())
@@ -340,24 +361,30 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
         HashMap<InetAddress, Double> newScores = new HashMap<>();
         for (Map.Entry<InetAddress, Snapshot> entry : snapshots.entrySet())
         {
-
             // Network Latency
-            double mean = entry.getValue().getMedian();
+            double meanNWL = entry.getValue().getMedian();
 
-            if (mean > maxLatency)
-                maxLatency = mean;
+            if (meanNWL > maxNWL)
+                maxNWL = meanNWL;
+
+            // Disk Access Latency
+            double DAL = diskAccess.get(entry.getKey());
+
+            if (DAL > maxDAL)
+                maxDAL = DAL;
         }
 
         // now make another pass to do the weighting based on the maximums we found before
         for (Map.Entry<InetAddress, Snapshot> entry : snapshots.entrySet())
         {
-            double score = entry.getValue().getMedian() / maxLatency;
+            double score = entry.getValue().getMedian() / maxNWL;
+            double influence = diskAccess.get(entry.getKey()) / maxDAL;
 
-            /* Debugging
             logger.info("(" + entry.getKey().getHostAddress() + ") " 
                         + "Initial Score: " + Double.toString(score) + " | "
                         + "Influenced Score: " + Double.toString(score + influence));
-            */
+
+            score += influence;
 
             // Score should not exceed 1.0
             score = score > 1.0 ? 1.0 : score;
