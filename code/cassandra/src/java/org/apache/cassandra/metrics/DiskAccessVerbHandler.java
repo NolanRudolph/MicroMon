@@ -27,6 +27,8 @@ import org.apache.cassandra.net.MessageIn;
 import org.apache.cassandra.net.MessageOut;
 import org.apache.cassandra.net.MessagingService;
 
+import java.io.*;
+
 public class DiskAccessVerbHandler implements IVerbHandler<DiskAccess>
 {
     private static final Logger logger = LoggerFactory.getLogger(DiskAccessVerbHandler.class);
@@ -34,18 +36,36 @@ public class DiskAccessVerbHandler implements IVerbHandler<DiskAccess>
     public void doVerb(MessageIn<DiskAccess> message, int id)
     {
         DiskAccess payload = message.payload;
-	if (payload.isHost)
-	{
-		DiskAccess retPayload = new DiskAccess(false, 69.69);
-		DiskAccessSerializer serializer = new DiskAccessSerializer();
-		MessageOut<DiskAccess> reply = new MessageOut<DiskAccess>(MessagingService.Verb.DISK_ACCESS, retPayload, serializer);
 
-		MessagingService.instance().sendReply(reply, id, message.from);
-	}
-	else
-	{
-		logger.info("@@@@@@@@@@ GOT MESSAGE WITH PAYLOAD : " + payload.latency + "@@@@@@@@@@@@@");
-		DynamicEndpointSnitch.diskAccess.put(message.from, payload.latency);
-	}
+	    if (payload.isHost)
+	    {
+            double DALatency = 0.0;
+
+            // Read in the updated disk access latency
+            try
+            {
+                File file = new File("/users/NolanR/diskAccess.txt");
+                BufferedReader br = new BufferedReader(new FileReader(file));
+                DALatency = Double.parseDouble(br.readLine());
+            }
+            catch (Exception e)
+            {
+                logger.error("ERROR : " + e);
+            }
+
+            logger.info("@@@@@@@ RETRIEVED AND SENDING PAYLOAD " + Double.toString(DALatency) + " @@@@@@@");
+
+            // Create a return message and send it to requester
+		    DiskAccess retPayload = new DiskAccess(false, DALatency);
+		    DiskAccessSerializer serializer = new DiskAccessSerializer();
+		    MessageOut<DiskAccess> reply = new MessageOut<DiskAccess>(MessagingService.Verb.DISK_ACCESS, retPayload, serializer);
+
+		    MessagingService.instance().sendReply(reply, id, message.from);
+	    }
+	    else
+	    {
+		    logger.info("@@@@@@@@@@ GOT MESSAGE WITH PAYLOAD : " + payload.latency + "@@@@@@@@@@@@@");
+		    DynamicEndpointSnitch.diskAccess.put(message.from, payload.latency);
+	    }
     }
 }
