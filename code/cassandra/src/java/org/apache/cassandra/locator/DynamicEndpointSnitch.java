@@ -381,8 +381,8 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
         // now make another pass to do the weighting based on the maximums we found before
         for (Map.Entry<InetAddress, Snapshot> entry : snapshots.entrySet())
         {
-            double score = (entry.getValue().getMedian() / maxNWL) * 0.5;
-            double influence = (diskAccess.get(entry.getKey()) / maxDAL) * 0.5;
+            double score = (entry.getValue().getMedian() / maxNWL) * (1.0/3.0);
+            double influence = (diskAccess.get(entry.getKey()) / maxDAL) * (2.0/3.0);
 
             logger.info("(" + entry.getKey().getHostAddress() + ") " 
                         + "Initial Score: " + Double.toString(score) + " | "
@@ -390,8 +390,8 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
             logger.info("(" + entry.getKey().getHostAddress() + ") " 
                         + "Network Latency: " + Double.toString(entry.getValue().getMedian()) + " | "
                         + "maxNWL: " + Double.toString(maxNWL) + " |  ("
-                        + Double.toString(entry.getValue().getMedian()) + " / " + Double.toString(maxNWL) + ") * 0.5 = " + Double.toString(((entry.getValue().getMedian()) / maxNWL) * 0.5) + " | "
-                        + "Disk Access Latency: " + diskAccess.get(entry.getKey()) + " | "
+                        + Double.toString(entry.getValue().getMedian()) + " / " + Double.toString(maxNWL) + ") * 0.5 = " + Double.toString(((entry.getValue().getMedian()) / maxNWL) * 0.5));
+            logger.info("Disk Access Latency: " + diskAccess.get(entry.getKey()) + " | "
                         + "maxDAL: " + Double.toString(maxDAL) + " |  ("
                         + diskAccess.get(entry.getKey()) + " / " + Double.toString(maxDAL) + ") * 0.5 = " + Double.toString((diskAccess.get(entry.getKey()) / maxDAL) * 0.5));
 
