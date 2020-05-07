@@ -370,7 +370,8 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
             // Disk Access Latency
             double DAL = diskAccess.get(entry.getKey());
 
-            if (DAL > maxDAL)
+            // 40.51 is the DAL to represent host
+            if (DAL > maxDAL && maxDAL != 40.51)
                 maxDAL = DAL;
         }
 
