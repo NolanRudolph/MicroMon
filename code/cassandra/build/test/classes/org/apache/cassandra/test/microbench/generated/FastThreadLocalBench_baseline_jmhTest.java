@@ -28,9 +28,6 @@ import org.openjdk.jmh.infra.BenchmarkParams;
 import org.openjdk.jmh.infra.IterationParams;
 import org.openjdk.jmh.infra.Blackhole;
 import org.openjdk.jmh.infra.Control;
-import org.openjdk.jmh.results.ScalarResult;
-import org.openjdk.jmh.results.AggregationPolicy;
-import org.openjdk.jmh.runner.FailureAssistException;
 
 import org.apache.cassandra.test.microbench.generated.FastThreadLocalBench_jmhType;
 import org.apache.cassandra.test.microbench.generated.FastThreadLocalBench_FastThreadLocalBenchState_jmhType;
@@ -63,17 +60,14 @@ public final class FastThreadLocalBench_baseline_jmhTest {
         this.benchmarkParams = control.benchmarkParams;
         this.iterationParams = control.iterationParams;
         this.threadParams    = threadParams;
-        this.notifyControl   = control.notifyControl;
-        if (this.blackhole == null) {
-            this.blackhole = new Blackhole("Today's password is swordfish. I understand instantiating Blackholes directly is dangerous.");
-        }
+        this.notifyControl   = new Control();
+        this.blackhole       = new Blackhole("Today's password is swordfish. I understand instantiating Blackholes directly is dangerous.");
         if (threadParams.getSubgroupIndex() == 0) {
             RawResults res = new RawResults();
             FastThreadLocalBench_jmhType l_fastthreadlocalbench0_G = _jmh_tryInit_f_fastthreadlocalbench0_G(control);
             FastThreadLocalBench_FastThreadLocalBenchState_jmhType l_fastthreadlocalbenchstate1_0 = _jmh_tryInit_f_fastthreadlocalbenchstate1_0(control);
 
             control.preSetup();
-
 
             control.announceWarmupReady();
             while (control.warmupShouldWait) {
@@ -110,7 +104,7 @@ public final class FastThreadLocalBench_baseline_jmhTest {
             res.measuredOps /= batchSize;
             BenchmarkTaskResult results = new BenchmarkTaskResult(res.allOps, res.measuredOps);
             results.add(new ThroughputResult(ResultRole.PRIMARY, "baseline", res.measuredOps, res.getTime(), benchmarkParams.getTimeUnit()));
-            this.blackhole.evaporate("Yes, I am Stephen Hawking, and know a thing or two about black holes.");
+            this.blackhole = null;
             return results;
         } else
             throw new IllegalStateException("Harness failed to distribute threads among groups properly");
@@ -134,17 +128,14 @@ public final class FastThreadLocalBench_baseline_jmhTest {
         this.benchmarkParams = control.benchmarkParams;
         this.iterationParams = control.iterationParams;
         this.threadParams    = threadParams;
-        this.notifyControl   = control.notifyControl;
-        if (this.blackhole == null) {
-            this.blackhole = new Blackhole("Today's password is swordfish. I understand instantiating Blackholes directly is dangerous.");
-        }
+        this.notifyControl   = new Control();
+        this.blackhole       = new Blackhole("Today's password is swordfish. I understand instantiating Blackholes directly is dangerous.");
         if (threadParams.getSubgroupIndex() == 0) {
             RawResults res = new RawResults();
             FastThreadLocalBench_jmhType l_fastthreadlocalbench0_G = _jmh_tryInit_f_fastthreadlocalbench0_G(control);
             FastThreadLocalBench_FastThreadLocalBenchState_jmhType l_fastthreadlocalbenchstate1_0 = _jmh_tryInit_f_fastthreadlocalbenchstate1_0(control);
 
             control.preSetup();
-
 
             control.announceWarmupReady();
             while (control.warmupShouldWait) {
@@ -181,7 +172,7 @@ public final class FastThreadLocalBench_baseline_jmhTest {
             res.measuredOps /= batchSize;
             BenchmarkTaskResult results = new BenchmarkTaskResult(res.allOps, res.measuredOps);
             results.add(new AverageTimeResult(ResultRole.PRIMARY, "baseline", res.measuredOps, res.getTime(), benchmarkParams.getTimeUnit()));
-            this.blackhole.evaporate("Yes, I am Stephen Hawking, and know a thing or two about black holes.");
+            this.blackhole = null;
             return results;
         } else
             throw new IllegalStateException("Harness failed to distribute threads among groups properly");
@@ -205,17 +196,14 @@ public final class FastThreadLocalBench_baseline_jmhTest {
         this.benchmarkParams = control.benchmarkParams;
         this.iterationParams = control.iterationParams;
         this.threadParams    = threadParams;
-        this.notifyControl   = control.notifyControl;
-        if (this.blackhole == null) {
-            this.blackhole = new Blackhole("Today's password is swordfish. I understand instantiating Blackholes directly is dangerous.");
-        }
+        this.notifyControl   = new Control();
+        this.blackhole       = new Blackhole("Today's password is swordfish. I understand instantiating Blackholes directly is dangerous.");
         if (threadParams.getSubgroupIndex() == 0) {
             RawResults res = new RawResults();
             FastThreadLocalBench_jmhType l_fastthreadlocalbench0_G = _jmh_tryInit_f_fastthreadlocalbench0_G(control);
             FastThreadLocalBench_FastThreadLocalBenchState_jmhType l_fastthreadlocalbenchstate1_0 = _jmh_tryInit_f_fastthreadlocalbenchstate1_0(control);
 
             control.preSetup();
-
 
             control.announceWarmupReady();
             while (control.warmupShouldWait) {
@@ -253,7 +241,7 @@ public final class FastThreadLocalBench_baseline_jmhTest {
             res.measuredOps *= opsPerInv;
             BenchmarkTaskResult results = new BenchmarkTaskResult(res.allOps, res.measuredOps);
             results.add(new SampleTimeResult(ResultRole.PRIMARY, "baseline", buffer, benchmarkParams.getTimeUnit()));
-            this.blackhole.evaporate("Yes, I am Stephen Hawking, and know a thing or two about black holes.");
+            this.blackhole = null;
             return results;
         } else
             throw new IllegalStateException("Harness failed to distribute threads among groups properly");
@@ -296,18 +284,14 @@ public final class FastThreadLocalBench_baseline_jmhTest {
         this.benchmarkParams = control.benchmarkParams;
         this.iterationParams = control.iterationParams;
         this.threadParams    = threadParams;
-        this.notifyControl   = control.notifyControl;
-        if (this.blackhole == null) {
-            this.blackhole = new Blackhole("Today's password is swordfish. I understand instantiating Blackholes directly is dangerous.");
-        }
+        this.notifyControl   = new Control();
+        this.blackhole       = new Blackhole("Today's password is swordfish. I understand instantiating Blackholes directly is dangerous.");
         if (threadParams.getSubgroupIndex() == 0) {
             FastThreadLocalBench_jmhType l_fastthreadlocalbench0_G = _jmh_tryInit_f_fastthreadlocalbench0_G(control);
             FastThreadLocalBench_FastThreadLocalBenchState_jmhType l_fastthreadlocalbenchstate1_0 = _jmh_tryInit_f_fastthreadlocalbenchstate1_0(control);
 
             control.preSetup();
 
-
-            notifyControl.startMeasurement = true;
             RawResults res = new RawResults();
             int batchSize = iterationParams.getBatchSize();
             baseline_ss_jmhStub(control, res, benchmarkParams, iterationParams, threadParams, blackhole, notifyControl, startRndMask, batchSize, l_fastthreadlocalbenchstate1_0, l_fastthreadlocalbench0_G);
@@ -323,7 +307,7 @@ public final class FastThreadLocalBench_baseline_jmhTest {
             long totalOps = opsPerInv;
             BenchmarkTaskResult results = new BenchmarkTaskResult(totalOps, totalOps);
             results.add(new SingleShotResult(ResultRole.PRIMARY, "baseline", res.getTime(), benchmarkParams.getTimeUnit()));
-            this.blackhole.evaporate("Yes, I am Stephen Hawking, and know a thing or two about black holes.");
+            this.blackhole = null;
             return results;
         } else
             throw new IllegalStateException("Harness failed to distribute threads among groups properly");
@@ -349,8 +333,6 @@ public final class FastThreadLocalBench_baseline_jmhTest {
             return val;
         }
         synchronized(this.getClass()) {
-            try {
-            if (control.isFailing) throw new FailureAssistException();
             val = f_fastthreadlocalbench0_G;
             if (val != null) {
                 return val;
@@ -362,10 +344,6 @@ public final class FastThreadLocalBench_baseline_jmhTest {
             f.set(val, Integer.valueOf(control.getParam("variables")));
             val.readyTrial = true;
             f_fastthreadlocalbench0_G = val;
-            } catch (Throwable t) {
-                control.isFailing = true;
-                throw t;
-            }
         }
         return val;
     }
@@ -373,7 +351,6 @@ public final class FastThreadLocalBench_baseline_jmhTest {
     FastThreadLocalBench_FastThreadLocalBenchState_jmhType f_fastthreadlocalbenchstate1_0;
     
     FastThreadLocalBench_FastThreadLocalBenchState_jmhType _jmh_tryInit_f_fastthreadlocalbenchstate1_0(InfraControl control) throws Throwable {
-        if (control.isFailing) throw new FailureAssistException();
         FastThreadLocalBench_FastThreadLocalBenchState_jmhType val = f_fastthreadlocalbenchstate1_0;
         if (val == null) {
             val = new FastThreadLocalBench_FastThreadLocalBenchState_jmhType();

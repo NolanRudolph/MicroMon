@@ -24,7 +24,8 @@ import java.util.Random;
 import org.junit.Assert;
 import org.junit.Test;
 
-import sun.misc.VM;
+//import sun.misc.VM;
+import jdk.internal.misc.VM;
 
 import static org.junit.Assert.assertEquals;
 

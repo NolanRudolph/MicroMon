@@ -28,9 +28,6 @@ import org.openjdk.jmh.infra.BenchmarkParams;
 import org.openjdk.jmh.infra.IterationParams;
 import org.openjdk.jmh.infra.Blackhole;
 import org.openjdk.jmh.infra.Control;
-import org.openjdk.jmh.results.ScalarResult;
-import org.openjdk.jmh.results.AggregationPolicy;
-import org.openjdk.jmh.runner.FailureAssistException;
 
 import org.apache.cassandra.test.microbench.generated.StreamingHistogramBench_jmhType;
 public final class StreamingHistogramBench_narrownewstreaminghistogram1000x60s_jmhTest {
@@ -62,16 +59,13 @@ public final class StreamingHistogramBench_narrownewstreaminghistogram1000x60s_j
         this.benchmarkParams = control.benchmarkParams;
         this.iterationParams = control.iterationParams;
         this.threadParams    = threadParams;
-        this.notifyControl   = control.notifyControl;
-        if (this.blackhole == null) {
-            this.blackhole = new Blackhole("Today's password is swordfish. I understand instantiating Blackholes directly is dangerous.");
-        }
+        this.notifyControl   = new Control();
+        this.blackhole       = new Blackhole("Today's password is swordfish. I understand instantiating Blackholes directly is dangerous.");
         if (threadParams.getSubgroupIndex() == 0) {
             RawResults res = new RawResults();
             StreamingHistogramBench_jmhType l_streaminghistogrambench0_G = _jmh_tryInit_f_streaminghistogrambench0_G(control);
 
             control.preSetup();
-
 
             control.announceWarmupReady();
             while (control.warmupShouldWait) {
@@ -96,14 +90,10 @@ public final class StreamingHistogramBench_narrownewstreaminghistogram1000x60s_j
             if (control.isLastIteration()) {
                 if (StreamingHistogramBench_jmhType.tearTrialMutexUpdater.compareAndSet(l_streaminghistogrambench0_G, 0, 1)) {
                     try {
-                        if (control.isFailing) throw new FailureAssistException();
                         if (l_streaminghistogrambench0_G.readyTrial) {
                             l_streaminghistogrambench0_G.teardown();
                             l_streaminghistogrambench0_G.readyTrial = false;
                         }
-                    } catch (Throwable t) {
-                        control.isFailing = true;
-                        throw t;
                     } finally {
                         StreamingHistogramBench_jmhType.tearTrialMutexUpdater.set(l_streaminghistogrambench0_G, 0);
                     }
@@ -112,7 +102,6 @@ public final class StreamingHistogramBench_narrownewstreaminghistogram1000x60s_j
                     while (StreamingHistogramBench_jmhType.tearTrialMutexUpdater.get(l_streaminghistogrambench0_G) == 1) {
                         TimeUnit.MILLISECONDS.sleep(l_streaminghistogrambench0_G_backoff);
                         l_streaminghistogrambench0_G_backoff = Math.max(1024, l_streaminghistogrambench0_G_backoff * 2);
-                        if (control.isFailing) throw new FailureAssistException();
                         if (Thread.interrupted()) throw new InterruptedException();
                     }
                 }
@@ -129,7 +118,7 @@ public final class StreamingHistogramBench_narrownewstreaminghistogram1000x60s_j
             res.measuredOps /= batchSize;
             BenchmarkTaskResult results = new BenchmarkTaskResult(res.allOps, res.measuredOps);
             results.add(new ThroughputResult(ResultRole.PRIMARY, "narrownewstreaminghistogram1000x60s", res.measuredOps, res.getTime(), benchmarkParams.getTimeUnit()));
-            this.blackhole.evaporate("Yes, I am Stephen Hawking, and know a thing or two about black holes.");
+            this.blackhole = null;
             return results;
         } else
             throw new IllegalStateException("Harness failed to distribute threads among groups properly");
@@ -153,16 +142,13 @@ public final class StreamingHistogramBench_narrownewstreaminghistogram1000x60s_j
         this.benchmarkParams = control.benchmarkParams;
         this.iterationParams = control.iterationParams;
         this.threadParams    = threadParams;
-        this.notifyControl   = control.notifyControl;
-        if (this.blackhole == null) {
-            this.blackhole = new Blackhole("Today's password is swordfish. I understand instantiating Blackholes directly is dangerous.");
-        }
+        this.notifyControl   = new Control();
+        this.blackhole       = new Blackhole("Today's password is swordfish. I understand instantiating Blackholes directly is dangerous.");
         if (threadParams.getSubgroupIndex() == 0) {
             RawResults res = new RawResults();
             StreamingHistogramBench_jmhType l_streaminghistogrambench0_G = _jmh_tryInit_f_streaminghistogrambench0_G(control);
 
             control.preSetup();
-
 
             control.announceWarmupReady();
             while (control.warmupShouldWait) {
@@ -187,14 +173,10 @@ public final class StreamingHistogramBench_narrownewstreaminghistogram1000x60s_j
             if (control.isLastIteration()) {
                 if (StreamingHistogramBench_jmhType.tearTrialMutexUpdater.compareAndSet(l_streaminghistogrambench0_G, 0, 1)) {
                     try {
-                        if (control.isFailing) throw new FailureAssistException();
                         if (l_streaminghistogrambench0_G.readyTrial) {
                             l_streaminghistogrambench0_G.teardown();
                             l_streaminghistogrambench0_G.readyTrial = false;
                         }
-                    } catch (Throwable t) {
-                        control.isFailing = true;
-                        throw t;
                     } finally {
                         StreamingHistogramBench_jmhType.tearTrialMutexUpdater.set(l_streaminghistogrambench0_G, 0);
                     }
@@ -203,7 +185,6 @@ public final class StreamingHistogramBench_narrownewstreaminghistogram1000x60s_j
                     while (StreamingHistogramBench_jmhType.tearTrialMutexUpdater.get(l_streaminghistogrambench0_G) == 1) {
                         TimeUnit.MILLISECONDS.sleep(l_streaminghistogrambench0_G_backoff);
                         l_streaminghistogrambench0_G_backoff = Math.max(1024, l_streaminghistogrambench0_G_backoff * 2);
-                        if (control.isFailing) throw new FailureAssistException();
                         if (Thread.interrupted()) throw new InterruptedException();
                     }
                 }
@@ -220,7 +201,7 @@ public final class StreamingHistogramBench_narrownewstreaminghistogram1000x60s_j
             res.measuredOps /= batchSize;
             BenchmarkTaskResult results = new BenchmarkTaskResult(res.allOps, res.measuredOps);
             results.add(new AverageTimeResult(ResultRole.PRIMARY, "narrownewstreaminghistogram1000x60s", res.measuredOps, res.getTime(), benchmarkParams.getTimeUnit()));
-            this.blackhole.evaporate("Yes, I am Stephen Hawking, and know a thing or two about black holes.");
+            this.blackhole = null;
             return results;
         } else
             throw new IllegalStateException("Harness failed to distribute threads among groups properly");
@@ -244,16 +225,13 @@ public final class StreamingHistogramBench_narrownewstreaminghistogram1000x60s_j
         this.benchmarkParams = control.benchmarkParams;
         this.iterationParams = control.iterationParams;
         this.threadParams    = threadParams;
-        this.notifyControl   = control.notifyControl;
-        if (this.blackhole == null) {
-            this.blackhole = new Blackhole("Today's password is swordfish. I understand instantiating Blackholes directly is dangerous.");
-        }
+        this.notifyControl   = new Control();
+        this.blackhole       = new Blackhole("Today's password is swordfish. I understand instantiating Blackholes directly is dangerous.");
         if (threadParams.getSubgroupIndex() == 0) {
             RawResults res = new RawResults();
             StreamingHistogramBench_jmhType l_streaminghistogrambench0_G = _jmh_tryInit_f_streaminghistogrambench0_G(control);
 
             control.preSetup();
-
 
             control.announceWarmupReady();
             while (control.warmupShouldWait) {
@@ -282,14 +260,10 @@ public final class StreamingHistogramBench_narrownewstreaminghistogram1000x60s_j
             if (control.isLastIteration()) {
                 if (StreamingHistogramBench_jmhType.tearTrialMutexUpdater.compareAndSet(l_streaminghistogrambench0_G, 0, 1)) {
                     try {
-                        if (control.isFailing) throw new FailureAssistException();
                         if (l_streaminghistogrambench0_G.readyTrial) {
                             l_streaminghistogrambench0_G.teardown();
                             l_streaminghistogrambench0_G.readyTrial = false;
                         }
-                    } catch (Throwable t) {
-                        control.isFailing = true;
-                        throw t;
                     } finally {
                         StreamingHistogramBench_jmhType.tearTrialMutexUpdater.set(l_streaminghistogrambench0_G, 0);
                     }
@@ -298,7 +272,6 @@ public final class StreamingHistogramBench_narrownewstreaminghistogram1000x60s_j
                     while (StreamingHistogramBench_jmhType.tearTrialMutexUpdater.get(l_streaminghistogrambench0_G) == 1) {
                         TimeUnit.MILLISECONDS.sleep(l_streaminghistogrambench0_G_backoff);
                         l_streaminghistogrambench0_G_backoff = Math.max(1024, l_streaminghistogrambench0_G_backoff * 2);
-                        if (control.isFailing) throw new FailureAssistException();
                         if (Thread.interrupted()) throw new InterruptedException();
                     }
                 }
@@ -312,7 +285,7 @@ public final class StreamingHistogramBench_narrownewstreaminghistogram1000x60s_j
             res.measuredOps *= opsPerInv;
             BenchmarkTaskResult results = new BenchmarkTaskResult(res.allOps, res.measuredOps);
             results.add(new SampleTimeResult(ResultRole.PRIMARY, "narrownewstreaminghistogram1000x60s", buffer, benchmarkParams.getTimeUnit()));
-            this.blackhole.evaporate("Yes, I am Stephen Hawking, and know a thing or two about black holes.");
+            this.blackhole = null;
             return results;
         } else
             throw new IllegalStateException("Harness failed to distribute threads among groups properly");
@@ -355,17 +328,13 @@ public final class StreamingHistogramBench_narrownewstreaminghistogram1000x60s_j
         this.benchmarkParams = control.benchmarkParams;
         this.iterationParams = control.iterationParams;
         this.threadParams    = threadParams;
-        this.notifyControl   = control.notifyControl;
-        if (this.blackhole == null) {
-            this.blackhole = new Blackhole("Today's password is swordfish. I understand instantiating Blackholes directly is dangerous.");
-        }
+        this.notifyControl   = new Control();
+        this.blackhole       = new Blackhole("Today's password is swordfish. I understand instantiating Blackholes directly is dangerous.");
         if (threadParams.getSubgroupIndex() == 0) {
             StreamingHistogramBench_jmhType l_streaminghistogrambench0_G = _jmh_tryInit_f_streaminghistogrambench0_G(control);
 
             control.preSetup();
 
-
-            notifyControl.startMeasurement = true;
             RawResults res = new RawResults();
             int batchSize = iterationParams.getBatchSize();
             narrownewstreaminghistogram1000x60s_ss_jmhStub(control, res, benchmarkParams, iterationParams, threadParams, blackhole, notifyControl, startRndMask, batchSize, l_streaminghistogrambench0_G);
@@ -374,14 +343,10 @@ public final class StreamingHistogramBench_narrownewstreaminghistogram1000x60s_j
             if (control.isLastIteration()) {
                 if (StreamingHistogramBench_jmhType.tearTrialMutexUpdater.compareAndSet(l_streaminghistogrambench0_G, 0, 1)) {
                     try {
-                        if (control.isFailing) throw new FailureAssistException();
                         if (l_streaminghistogrambench0_G.readyTrial) {
                             l_streaminghistogrambench0_G.teardown();
                             l_streaminghistogrambench0_G.readyTrial = false;
                         }
-                    } catch (Throwable t) {
-                        control.isFailing = true;
-                        throw t;
                     } finally {
                         StreamingHistogramBench_jmhType.tearTrialMutexUpdater.set(l_streaminghistogrambench0_G, 0);
                     }
@@ -390,7 +355,6 @@ public final class StreamingHistogramBench_narrownewstreaminghistogram1000x60s_j
                     while (StreamingHistogramBench_jmhType.tearTrialMutexUpdater.get(l_streaminghistogrambench0_G) == 1) {
                         TimeUnit.MILLISECONDS.sleep(l_streaminghistogrambench0_G_backoff);
                         l_streaminghistogrambench0_G_backoff = Math.max(1024, l_streaminghistogrambench0_G_backoff * 2);
-                        if (control.isFailing) throw new FailureAssistException();
                         if (Thread.interrupted()) throw new InterruptedException();
                     }
                 }
@@ -402,7 +366,7 @@ public final class StreamingHistogramBench_narrownewstreaminghistogram1000x60s_j
             long totalOps = opsPerInv;
             BenchmarkTaskResult results = new BenchmarkTaskResult(totalOps, totalOps);
             results.add(new SingleShotResult(ResultRole.PRIMARY, "narrownewstreaminghistogram1000x60s", res.getTime(), benchmarkParams.getTimeUnit()));
-            this.blackhole.evaporate("Yes, I am Stephen Hawking, and know a thing or two about black holes.");
+            this.blackhole = null;
             return results;
         } else
             throw new IllegalStateException("Harness failed to distribute threads among groups properly");
@@ -428,8 +392,6 @@ public final class StreamingHistogramBench_narrownewstreaminghistogram1000x60s_j
             return val;
         }
         synchronized(this.getClass()) {
-            try {
-            if (control.isFailing) throw new FailureAssistException();
             val = f_streaminghistogrambench0_G;
             if (val != null) {
                 return val;
@@ -438,10 +400,6 @@ public final class StreamingHistogramBench_narrownewstreaminghistogram1000x60s_j
             val.setup();
             val.readyTrial = true;
             f_streaminghistogrambench0_G = val;
-            } catch (Throwable t) {
-                control.isFailing = true;
-                throw t;
-            }
         }
         return val;
     }

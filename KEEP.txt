@@ -2,7 +2,7 @@ STEPS FOR SETTING UP TESTING ENVIRONMENT:
 - ALL NODES:
   1. $ sudo apt-get update
   2. $ git clone git@github.com:SudarsunKannan/butterflyeffect.git
-  3. $ git checkout FullDynamic
+  3. $ git checkout FullDynamic (run only installation part of install_cassandra.sh)
   4. $ sudo apt-get install -y openjdk-8-jdk maven ant
   5. $ sudo update-java-alternatives -s java-1.8.0-openjdk-amd64; java -version
   6. $ cd ~/butterflyeffect/code; source scripts/setvars.sh

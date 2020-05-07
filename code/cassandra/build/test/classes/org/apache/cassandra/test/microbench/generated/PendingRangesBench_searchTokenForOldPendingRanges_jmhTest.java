@@ -28,9 +28,6 @@ import org.openjdk.jmh.infra.BenchmarkParams;
 import org.openjdk.jmh.infra.IterationParams;
 import org.openjdk.jmh.infra.Blackhole;
 import org.openjdk.jmh.infra.Control;
-import org.openjdk.jmh.results.ScalarResult;
-import org.openjdk.jmh.results.AggregationPolicy;
-import org.openjdk.jmh.runner.FailureAssistException;
 
 import org.apache.cassandra.test.microbench.generated.PendingRangesBench_jmhType;
 public final class PendingRangesBench_searchTokenForOldPendingRanges_jmhTest {
@@ -62,16 +59,13 @@ public final class PendingRangesBench_searchTokenForOldPendingRanges_jmhTest {
         this.benchmarkParams = control.benchmarkParams;
         this.iterationParams = control.iterationParams;
         this.threadParams    = threadParams;
-        this.notifyControl   = control.notifyControl;
-        if (this.blackhole == null) {
-            this.blackhole = new Blackhole("Today's password is swordfish. I understand instantiating Blackholes directly is dangerous.");
-        }
+        this.notifyControl   = new Control();
+        this.blackhole       = new Blackhole("Today's password is swordfish. I understand instantiating Blackholes directly is dangerous.");
         if (threadParams.getSubgroupIndex() == 0) {
             RawResults res = new RawResults();
             PendingRangesBench_jmhType l_pendingrangesbench0_G = _jmh_tryInit_f_pendingrangesbench0_G(control);
 
             control.preSetup();
-
 
             control.announceWarmupReady();
             while (control.warmupShouldWait) {
@@ -96,13 +90,9 @@ public final class PendingRangesBench_searchTokenForOldPendingRanges_jmhTest {
             if (control.isLastIteration()) {
                 if (PendingRangesBench_jmhType.tearTrialMutexUpdater.compareAndSet(l_pendingrangesbench0_G, 0, 1)) {
                     try {
-                        if (control.isFailing) throw new FailureAssistException();
                         if (l_pendingrangesbench0_G.readyTrial) {
                             l_pendingrangesbench0_G.readyTrial = false;
                         }
-                    } catch (Throwable t) {
-                        control.isFailing = true;
-                        throw t;
                     } finally {
                         PendingRangesBench_jmhType.tearTrialMutexUpdater.set(l_pendingrangesbench0_G, 0);
                     }
@@ -111,7 +101,6 @@ public final class PendingRangesBench_searchTokenForOldPendingRanges_jmhTest {
                     while (PendingRangesBench_jmhType.tearTrialMutexUpdater.get(l_pendingrangesbench0_G) == 1) {
                         TimeUnit.MILLISECONDS.sleep(l_pendingrangesbench0_G_backoff);
                         l_pendingrangesbench0_G_backoff = Math.max(1024, l_pendingrangesbench0_G_backoff * 2);
-                        if (control.isFailing) throw new FailureAssistException();
                         if (Thread.interrupted()) throw new InterruptedException();
                     }
                 }
@@ -128,7 +117,7 @@ public final class PendingRangesBench_searchTokenForOldPendingRanges_jmhTest {
             res.measuredOps /= batchSize;
             BenchmarkTaskResult results = new BenchmarkTaskResult(res.allOps, res.measuredOps);
             results.add(new ThroughputResult(ResultRole.PRIMARY, "searchTokenForOldPendingRanges", res.measuredOps, res.getTime(), benchmarkParams.getTimeUnit()));
-            this.blackhole.evaporate("Yes, I am Stephen Hawking, and know a thing or two about black holes.");
+            this.blackhole = null;
             return results;
         } else
             throw new IllegalStateException("Harness failed to distribute threads among groups properly");
@@ -152,16 +141,13 @@ public final class PendingRangesBench_searchTokenForOldPendingRanges_jmhTest {
         this.benchmarkParams = control.benchmarkParams;
         this.iterationParams = control.iterationParams;
         this.threadParams    = threadParams;
-        this.notifyControl   = control.notifyControl;
-        if (this.blackhole == null) {
-            this.blackhole = new Blackhole("Today's password is swordfish. I understand instantiating Blackholes directly is dangerous.");
-        }
+        this.notifyControl   = new Control();
+        this.blackhole       = new Blackhole("Today's password is swordfish. I understand instantiating Blackholes directly is dangerous.");
         if (threadParams.getSubgroupIndex() == 0) {
             RawResults res = new RawResults();
             PendingRangesBench_jmhType l_pendingrangesbench0_G = _jmh_tryInit_f_pendingrangesbench0_G(control);
 
             control.preSetup();
-
 
             control.announceWarmupReady();
             while (control.warmupShouldWait) {
@@ -186,13 +172,9 @@ public final class PendingRangesBench_searchTokenForOldPendingRanges_jmhTest {
             if (control.isLastIteration()) {
                 if (PendingRangesBench_jmhType.tearTrialMutexUpdater.compareAndSet(l_pendingrangesbench0_G, 0, 1)) {
                     try {
-                        if (control.isFailing) throw new FailureAssistException();
                         if (l_pendingrangesbench0_G.readyTrial) {
                             l_pendingrangesbench0_G.readyTrial = false;
                         }
-                    } catch (Throwable t) {
-                        control.isFailing = true;
-                        throw t;
                     } finally {
                         PendingRangesBench_jmhType.tearTrialMutexUpdater.set(l_pendingrangesbench0_G, 0);
                     }
@@ -201,7 +183,6 @@ public final class PendingRangesBench_searchTokenForOldPendingRanges_jmhTest {
                     while (PendingRangesBench_jmhType.tearTrialMutexUpdater.get(l_pendingrangesbench0_G) == 1) {
                         TimeUnit.MILLISECONDS.sleep(l_pendingrangesbench0_G_backoff);
                         l_pendingrangesbench0_G_backoff = Math.max(1024, l_pendingrangesbench0_G_backoff * 2);
-                        if (control.isFailing) throw new FailureAssistException();
                         if (Thread.interrupted()) throw new InterruptedException();
                     }
                 }
@@ -218,7 +199,7 @@ public final class PendingRangesBench_searchTokenForOldPendingRanges_jmhTest {
             res.measuredOps /= batchSize;
             BenchmarkTaskResult results = new BenchmarkTaskResult(res.allOps, res.measuredOps);
             results.add(new AverageTimeResult(ResultRole.PRIMARY, "searchTokenForOldPendingRanges", res.measuredOps, res.getTime(), benchmarkParams.getTimeUnit()));
-            this.blackhole.evaporate("Yes, I am Stephen Hawking, and know a thing or two about black holes.");
+            this.blackhole = null;
             return results;
         } else
             throw new IllegalStateException("Harness failed to distribute threads among groups properly");
@@ -242,16 +223,13 @@ public final class PendingRangesBench_searchTokenForOldPendingRanges_jmhTest {
         this.benchmarkParams = control.benchmarkParams;
         this.iterationParams = control.iterationParams;
         this.threadParams    = threadParams;
-        this.notifyControl   = control.notifyControl;
-        if (this.blackhole == null) {
-            this.blackhole = new Blackhole("Today's password is swordfish. I understand instantiating Blackholes directly is dangerous.");
-        }
+        this.notifyControl   = new Control();
+        this.blackhole       = new Blackhole("Today's password is swordfish. I understand instantiating Blackholes directly is dangerous.");
         if (threadParams.getSubgroupIndex() == 0) {
             RawResults res = new RawResults();
             PendingRangesBench_jmhType l_pendingrangesbench0_G = _jmh_tryInit_f_pendingrangesbench0_G(control);
 
             control.preSetup();
-
 
             control.announceWarmupReady();
             while (control.warmupShouldWait) {
@@ -280,13 +258,9 @@ public final class PendingRangesBench_searchTokenForOldPendingRanges_jmhTest {
             if (control.isLastIteration()) {
                 if (PendingRangesBench_jmhType.tearTrialMutexUpdater.compareAndSet(l_pendingrangesbench0_G, 0, 1)) {
                     try {
-                        if (control.isFailing) throw new FailureAssistException();
                         if (l_pendingrangesbench0_G.readyTrial) {
                             l_pendingrangesbench0_G.readyTrial = false;
                         }
-                    } catch (Throwable t) {
-                        control.isFailing = true;
-                        throw t;
                     } finally {
                         PendingRangesBench_jmhType.tearTrialMutexUpdater.set(l_pendingrangesbench0_G, 0);
                     }
@@ -295,7 +269,6 @@ public final class PendingRangesBench_searchTokenForOldPendingRanges_jmhTest {
                     while (PendingRangesBench_jmhType.tearTrialMutexUpdater.get(l_pendingrangesbench0_G) == 1) {
                         TimeUnit.MILLISECONDS.sleep(l_pendingrangesbench0_G_backoff);
                         l_pendingrangesbench0_G_backoff = Math.max(1024, l_pendingrangesbench0_G_backoff * 2);
-                        if (control.isFailing) throw new FailureAssistException();
                         if (Thread.interrupted()) throw new InterruptedException();
                     }
                 }
@@ -309,7 +282,7 @@ public final class PendingRangesBench_searchTokenForOldPendingRanges_jmhTest {
             res.measuredOps *= opsPerInv;
             BenchmarkTaskResult results = new BenchmarkTaskResult(res.allOps, res.measuredOps);
             results.add(new SampleTimeResult(ResultRole.PRIMARY, "searchTokenForOldPendingRanges", buffer, benchmarkParams.getTimeUnit()));
-            this.blackhole.evaporate("Yes, I am Stephen Hawking, and know a thing or two about black holes.");
+            this.blackhole = null;
             return results;
         } else
             throw new IllegalStateException("Harness failed to distribute threads among groups properly");
@@ -352,17 +325,13 @@ public final class PendingRangesBench_searchTokenForOldPendingRanges_jmhTest {
         this.benchmarkParams = control.benchmarkParams;
         this.iterationParams = control.iterationParams;
         this.threadParams    = threadParams;
-        this.notifyControl   = control.notifyControl;
-        if (this.blackhole == null) {
-            this.blackhole = new Blackhole("Today's password is swordfish. I understand instantiating Blackholes directly is dangerous.");
-        }
+        this.notifyControl   = new Control();
+        this.blackhole       = new Blackhole("Today's password is swordfish. I understand instantiating Blackholes directly is dangerous.");
         if (threadParams.getSubgroupIndex() == 0) {
             PendingRangesBench_jmhType l_pendingrangesbench0_G = _jmh_tryInit_f_pendingrangesbench0_G(control);
 
             control.preSetup();
 
-
-            notifyControl.startMeasurement = true;
             RawResults res = new RawResults();
             int batchSize = iterationParams.getBatchSize();
             searchTokenForOldPendingRanges_ss_jmhStub(control, res, benchmarkParams, iterationParams, threadParams, blackhole, notifyControl, startRndMask, batchSize, l_pendingrangesbench0_G);
@@ -371,13 +340,9 @@ public final class PendingRangesBench_searchTokenForOldPendingRanges_jmhTest {
             if (control.isLastIteration()) {
                 if (PendingRangesBench_jmhType.tearTrialMutexUpdater.compareAndSet(l_pendingrangesbench0_G, 0, 1)) {
                     try {
-                        if (control.isFailing) throw new FailureAssistException();
                         if (l_pendingrangesbench0_G.readyTrial) {
                             l_pendingrangesbench0_G.readyTrial = false;
                         }
-                    } catch (Throwable t) {
-                        control.isFailing = true;
-                        throw t;
                     } finally {
                         PendingRangesBench_jmhType.tearTrialMutexUpdater.set(l_pendingrangesbench0_G, 0);
                     }
@@ -386,7 +351,6 @@ public final class PendingRangesBench_searchTokenForOldPendingRanges_jmhTest {
                     while (PendingRangesBench_jmhType.tearTrialMutexUpdater.get(l_pendingrangesbench0_G) == 1) {
                         TimeUnit.MILLISECONDS.sleep(l_pendingrangesbench0_G_backoff);
                         l_pendingrangesbench0_G_backoff = Math.max(1024, l_pendingrangesbench0_G_backoff * 2);
-                        if (control.isFailing) throw new FailureAssistException();
                         if (Thread.interrupted()) throw new InterruptedException();
                     }
                 }
@@ -398,7 +362,7 @@ public final class PendingRangesBench_searchTokenForOldPendingRanges_jmhTest {
             long totalOps = opsPerInv;
             BenchmarkTaskResult results = new BenchmarkTaskResult(totalOps, totalOps);
             results.add(new SingleShotResult(ResultRole.PRIMARY, "searchTokenForOldPendingRanges", res.getTime(), benchmarkParams.getTimeUnit()));
-            this.blackhole.evaporate("Yes, I am Stephen Hawking, and know a thing or two about black holes.");
+            this.blackhole = null;
             return results;
         } else
             throw new IllegalStateException("Harness failed to distribute threads among groups properly");
@@ -424,8 +388,6 @@ public final class PendingRangesBench_searchTokenForOldPendingRanges_jmhTest {
             return val;
         }
         synchronized(this.getClass()) {
-            try {
-            if (control.isFailing) throw new FailureAssistException();
             val = f_pendingrangesbench0_G;
             if (val != null) {
                 return val;
@@ -434,10 +396,6 @@ public final class PendingRangesBench_searchTokenForOldPendingRanges_jmhTest {
             val.setUp();
             val.readyTrial = true;
             f_pendingrangesbench0_G = val;
-            } catch (Throwable t) {
-                control.isFailing = true;
-                throw t;
-            }
         }
         return val;
     }

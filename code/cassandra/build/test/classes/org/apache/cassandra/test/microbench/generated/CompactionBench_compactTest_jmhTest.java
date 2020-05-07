@@ -28,9 +28,6 @@ import org.openjdk.jmh.infra.BenchmarkParams;
 import org.openjdk.jmh.infra.IterationParams;
 import org.openjdk.jmh.infra.Blackhole;
 import org.openjdk.jmh.infra.Control;
-import org.openjdk.jmh.results.ScalarResult;
-import org.openjdk.jmh.results.AggregationPolicy;
-import org.openjdk.jmh.runner.FailureAssistException;
 
 import org.apache.cassandra.test.microbench.generated.CompactionBench_jmhType;
 public final class CompactionBench_compactTest_jmhTest {
@@ -62,54 +59,41 @@ public final class CompactionBench_compactTest_jmhTest {
         this.benchmarkParams = control.benchmarkParams;
         this.iterationParams = control.iterationParams;
         this.threadParams    = threadParams;
-        this.notifyControl   = control.notifyControl;
-        if (this.blackhole == null) {
-            this.blackhole = new Blackhole("Today's password is swordfish. I understand instantiating Blackholes directly is dangerous.");
-        }
+        this.notifyControl   = new Control();
+        this.blackhole       = new Blackhole("Today's password is swordfish. I understand instantiating Blackholes directly is dangerous.");
         if (threadParams.getSubgroupIndex() == 0) {
             RawResults res = new RawResults();
             CompactionBench_jmhType l_compactionbench0_G = _jmh_tryInit_f_compactionbench0_G(control);
 
             control.preSetup();
 
-
             control.announceWarmupReady();
             while (control.warmupShouldWait) {
                 if (CompactionBench_jmhType.setupInvocationMutexUpdater.compareAndSet(l_compactionbench0_G, 0, 1)) {
                     try {
-                        if (control.isFailing) throw new FailureAssistException();
                         if (!l_compactionbench0_G.readyInvocation) {
                             l_compactionbench0_G.readyInvocation = true;
                         }
-                    } catch (Throwable t) {
-                        control.isFailing = true;
-                        throw t;
                     } finally {
                         CompactionBench_jmhType.setupInvocationMutexUpdater.set(l_compactionbench0_G, 0);
                     }
                 } else {
                     while (CompactionBench_jmhType.setupInvocationMutexUpdater.get(l_compactionbench0_G) == 1) {
-                        if (control.isFailing) throw new FailureAssistException();
                         if (Thread.interrupted()) throw new InterruptedException();
                     }
                 }
                 l_compactionbench0_G.compactTest();
                 if (CompactionBench_jmhType.tearInvocationMutexUpdater.compareAndSet(l_compactionbench0_G, 0, 1)) {
                     try {
-                        if (control.isFailing) throw new FailureAssistException();
                         if (l_compactionbench0_G.readyInvocation) {
                             l_compactionbench0_G.resetSnapshot();
                             l_compactionbench0_G.readyInvocation = false;
                         }
-                    } catch (Throwable t) {
-                        control.isFailing = true;
-                        throw t;
                     } finally {
                         CompactionBench_jmhType.tearInvocationMutexUpdater.set(l_compactionbench0_G, 0);
                     }
                 } else {
                     while (CompactionBench_jmhType.tearInvocationMutexUpdater.get(l_compactionbench0_G) == 1) {
-                        if (control.isFailing) throw new FailureAssistException();
                         if (Thread.interrupted()) throw new InterruptedException();
                     }
                 }
@@ -124,39 +108,29 @@ public final class CompactionBench_compactTest_jmhTest {
                 while (control.warmdownShouldWait) {
                     if (CompactionBench_jmhType.setupInvocationMutexUpdater.compareAndSet(l_compactionbench0_G, 0, 1)) {
                         try {
-                            if (control.isFailing) throw new FailureAssistException();
                             if (!l_compactionbench0_G.readyInvocation) {
                                 l_compactionbench0_G.readyInvocation = true;
                             }
-                        } catch (Throwable t) {
-                            control.isFailing = true;
-                            throw t;
                         } finally {
                             CompactionBench_jmhType.setupInvocationMutexUpdater.set(l_compactionbench0_G, 0);
                         }
                     } else {
                         while (CompactionBench_jmhType.setupInvocationMutexUpdater.get(l_compactionbench0_G) == 1) {
-                            if (control.isFailing) throw new FailureAssistException();
                             if (Thread.interrupted()) throw new InterruptedException();
                         }
                     }
                     l_compactionbench0_G.compactTest();
                     if (CompactionBench_jmhType.tearInvocationMutexUpdater.compareAndSet(l_compactionbench0_G, 0, 1)) {
                         try {
-                            if (control.isFailing) throw new FailureAssistException();
                             if (l_compactionbench0_G.readyInvocation) {
                                 l_compactionbench0_G.resetSnapshot();
                                 l_compactionbench0_G.readyInvocation = false;
                             }
-                        } catch (Throwable t) {
-                            control.isFailing = true;
-                            throw t;
                         } finally {
                             CompactionBench_jmhType.tearInvocationMutexUpdater.set(l_compactionbench0_G, 0);
                         }
                     } else {
                         while (CompactionBench_jmhType.tearInvocationMutexUpdater.get(l_compactionbench0_G) == 1) {
-                            if (control.isFailing) throw new FailureAssistException();
                             if (Thread.interrupted()) throw new InterruptedException();
                         }
                     }
@@ -170,14 +144,10 @@ public final class CompactionBench_compactTest_jmhTest {
             if (control.isLastIteration()) {
                 if (CompactionBench_jmhType.tearTrialMutexUpdater.compareAndSet(l_compactionbench0_G, 0, 1)) {
                     try {
-                        if (control.isFailing) throw new FailureAssistException();
                         if (l_compactionbench0_G.readyTrial) {
                             l_compactionbench0_G.teardown();
                             l_compactionbench0_G.readyTrial = false;
                         }
-                    } catch (Throwable t) {
-                        control.isFailing = true;
-                        throw t;
                     } finally {
                         CompactionBench_jmhType.tearTrialMutexUpdater.set(l_compactionbench0_G, 0);
                     }
@@ -186,7 +156,6 @@ public final class CompactionBench_compactTest_jmhTest {
                     while (CompactionBench_jmhType.tearTrialMutexUpdater.get(l_compactionbench0_G) == 1) {
                         TimeUnit.MILLISECONDS.sleep(l_compactionbench0_G_backoff);
                         l_compactionbench0_G_backoff = Math.max(1024, l_compactionbench0_G_backoff * 2);
-                        if (control.isFailing) throw new FailureAssistException();
                         if (Thread.interrupted()) throw new InterruptedException();
                     }
                 }
@@ -203,7 +172,7 @@ public final class CompactionBench_compactTest_jmhTest {
             res.measuredOps /= batchSize;
             BenchmarkTaskResult results = new BenchmarkTaskResult(res.allOps, res.measuredOps);
             results.add(new ThroughputResult(ResultRole.PRIMARY, "compactTest", res.measuredOps, res.getTime(), benchmarkParams.getTimeUnit()));
-            this.blackhole.evaporate("Yes, I am Stephen Hawking, and know a thing or two about black holes.");
+            this.blackhole = null;
             return results;
         } else
             throw new IllegalStateException("Harness failed to distribute threads among groups properly");
@@ -216,19 +185,14 @@ public final class CompactionBench_compactTest_jmhTest {
         do {
             if (CompactionBench_jmhType.setupInvocationMutexUpdater.compareAndSet(l_compactionbench0_G, 0, 1)) {
                 try {
-                    if (control.isFailing) throw new FailureAssistException();
                     if (!l_compactionbench0_G.readyInvocation) {
                         l_compactionbench0_G.readyInvocation = true;
                     }
-                } catch (Throwable t) {
-                    control.isFailing = true;
-                    throw t;
                 } finally {
                     CompactionBench_jmhType.setupInvocationMutexUpdater.set(l_compactionbench0_G, 0);
                 }
             } else {
                 while (CompactionBench_jmhType.setupInvocationMutexUpdater.get(l_compactionbench0_G) == 1) {
-                    if (control.isFailing) throw new FailureAssistException();
                     if (Thread.interrupted()) throw new InterruptedException();
                 }
             }
@@ -237,20 +201,15 @@ public final class CompactionBench_compactTest_jmhTest {
             realTime += (System.nanoTime() - rt);
             if (CompactionBench_jmhType.tearInvocationMutexUpdater.compareAndSet(l_compactionbench0_G, 0, 1)) {
                 try {
-                    if (control.isFailing) throw new FailureAssistException();
                     if (l_compactionbench0_G.readyInvocation) {
                         l_compactionbench0_G.resetSnapshot();
                         l_compactionbench0_G.readyInvocation = false;
                     }
-                } catch (Throwable t) {
-                    control.isFailing = true;
-                    throw t;
                 } finally {
                     CompactionBench_jmhType.tearInvocationMutexUpdater.set(l_compactionbench0_G, 0);
                 }
             } else {
                 while (CompactionBench_jmhType.tearInvocationMutexUpdater.get(l_compactionbench0_G) == 1) {
-                    if (control.isFailing) throw new FailureAssistException();
                     if (Thread.interrupted()) throw new InterruptedException();
                 }
             }
@@ -266,54 +225,41 @@ public final class CompactionBench_compactTest_jmhTest {
         this.benchmarkParams = control.benchmarkParams;
         this.iterationParams = control.iterationParams;
         this.threadParams    = threadParams;
-        this.notifyControl   = control.notifyControl;
-        if (this.blackhole == null) {
-            this.blackhole = new Blackhole("Today's password is swordfish. I understand instantiating Blackholes directly is dangerous.");
-        }
+        this.notifyControl   = new Control();
+        this.blackhole       = new Blackhole("Today's password is swordfish. I understand instantiating Blackholes directly is dangerous.");
         if (threadParams.getSubgroupIndex() == 0) {
             RawResults res = new RawResults();
             CompactionBench_jmhType l_compactionbench0_G = _jmh_tryInit_f_compactionbench0_G(control);
 
             control.preSetup();
 
-
             control.announceWarmupReady();
             while (control.warmupShouldWait) {
                 if (CompactionBench_jmhType.setupInvocationMutexUpdater.compareAndSet(l_compactionbench0_G, 0, 1)) {
                     try {
-                        if (control.isFailing) throw new FailureAssistException();
                         if (!l_compactionbench0_G.readyInvocation) {
                             l_compactionbench0_G.readyInvocation = true;
                         }
-                    } catch (Throwable t) {
-                        control.isFailing = true;
-                        throw t;
                     } finally {
                         CompactionBench_jmhType.setupInvocationMutexUpdater.set(l_compactionbench0_G, 0);
                     }
                 } else {
                     while (CompactionBench_jmhType.setupInvocationMutexUpdater.get(l_compactionbench0_G) == 1) {
-                        if (control.isFailing) throw new FailureAssistException();
                         if (Thread.interrupted()) throw new InterruptedException();
                     }
                 }
                 l_compactionbench0_G.compactTest();
                 if (CompactionBench_jmhType.tearInvocationMutexUpdater.compareAndSet(l_compactionbench0_G, 0, 1)) {
                     try {
-                        if (control.isFailing) throw new FailureAssistException();
                         if (l_compactionbench0_G.readyInvocation) {
                             l_compactionbench0_G.resetSnapshot();
                             l_compactionbench0_G.readyInvocation = false;
                         }
-                    } catch (Throwable t) {
-                        control.isFailing = true;
-                        throw t;
                     } finally {
                         CompactionBench_jmhType.tearInvocationMutexUpdater.set(l_compactionbench0_G, 0);
                     }
                 } else {
                     while (CompactionBench_jmhType.tearInvocationMutexUpdater.get(l_compactionbench0_G) == 1) {
-                        if (control.isFailing) throw new FailureAssistException();
                         if (Thread.interrupted()) throw new InterruptedException();
                     }
                 }
@@ -328,39 +274,29 @@ public final class CompactionBench_compactTest_jmhTest {
                 while (control.warmdownShouldWait) {
                     if (CompactionBench_jmhType.setupInvocationMutexUpdater.compareAndSet(l_compactionbench0_G, 0, 1)) {
                         try {
-                            if (control.isFailing) throw new FailureAssistException();
                             if (!l_compactionbench0_G.readyInvocation) {
                                 l_compactionbench0_G.readyInvocation = true;
                             }
-                        } catch (Throwable t) {
-                            control.isFailing = true;
-                            throw t;
                         } finally {
                             CompactionBench_jmhType.setupInvocationMutexUpdater.set(l_compactionbench0_G, 0);
                         }
                     } else {
                         while (CompactionBench_jmhType.setupInvocationMutexUpdater.get(l_compactionbench0_G) == 1) {
-                            if (control.isFailing) throw new FailureAssistException();
                             if (Thread.interrupted()) throw new InterruptedException();
                         }
                     }
                     l_compactionbench0_G.compactTest();
                     if (CompactionBench_jmhType.tearInvocationMutexUpdater.compareAndSet(l_compactionbench0_G, 0, 1)) {
                         try {
-                            if (control.isFailing) throw new FailureAssistException();
                             if (l_compactionbench0_G.readyInvocation) {
                                 l_compactionbench0_G.resetSnapshot();
                                 l_compactionbench0_G.readyInvocation = false;
                             }
-                        } catch (Throwable t) {
-                            control.isFailing = true;
-                            throw t;
                         } finally {
                             CompactionBench_jmhType.tearInvocationMutexUpdater.set(l_compactionbench0_G, 0);
                         }
                     } else {
                         while (CompactionBench_jmhType.tearInvocationMutexUpdater.get(l_compactionbench0_G) == 1) {
-                            if (control.isFailing) throw new FailureAssistException();
                             if (Thread.interrupted()) throw new InterruptedException();
                         }
                     }
@@ -374,14 +310,10 @@ public final class CompactionBench_compactTest_jmhTest {
             if (control.isLastIteration()) {
                 if (CompactionBench_jmhType.tearTrialMutexUpdater.compareAndSet(l_compactionbench0_G, 0, 1)) {
                     try {
-                        if (control.isFailing) throw new FailureAssistException();
                         if (l_compactionbench0_G.readyTrial) {
                             l_compactionbench0_G.teardown();
                             l_compactionbench0_G.readyTrial = false;
                         }
-                    } catch (Throwable t) {
-                        control.isFailing = true;
-                        throw t;
                     } finally {
                         CompactionBench_jmhType.tearTrialMutexUpdater.set(l_compactionbench0_G, 0);
                     }
@@ -390,7 +322,6 @@ public final class CompactionBench_compactTest_jmhTest {
                     while (CompactionBench_jmhType.tearTrialMutexUpdater.get(l_compactionbench0_G) == 1) {
                         TimeUnit.MILLISECONDS.sleep(l_compactionbench0_G_backoff);
                         l_compactionbench0_G_backoff = Math.max(1024, l_compactionbench0_G_backoff * 2);
-                        if (control.isFailing) throw new FailureAssistException();
                         if (Thread.interrupted()) throw new InterruptedException();
                     }
                 }
@@ -407,7 +338,7 @@ public final class CompactionBench_compactTest_jmhTest {
             res.measuredOps /= batchSize;
             BenchmarkTaskResult results = new BenchmarkTaskResult(res.allOps, res.measuredOps);
             results.add(new AverageTimeResult(ResultRole.PRIMARY, "compactTest", res.measuredOps, res.getTime(), benchmarkParams.getTimeUnit()));
-            this.blackhole.evaporate("Yes, I am Stephen Hawking, and know a thing or two about black holes.");
+            this.blackhole = null;
             return results;
         } else
             throw new IllegalStateException("Harness failed to distribute threads among groups properly");
@@ -420,19 +351,14 @@ public final class CompactionBench_compactTest_jmhTest {
         do {
             if (CompactionBench_jmhType.setupInvocationMutexUpdater.compareAndSet(l_compactionbench0_G, 0, 1)) {
                 try {
-                    if (control.isFailing) throw new FailureAssistException();
                     if (!l_compactionbench0_G.readyInvocation) {
                         l_compactionbench0_G.readyInvocation = true;
                     }
-                } catch (Throwable t) {
-                    control.isFailing = true;
-                    throw t;
                 } finally {
                     CompactionBench_jmhType.setupInvocationMutexUpdater.set(l_compactionbench0_G, 0);
                 }
             } else {
                 while (CompactionBench_jmhType.setupInvocationMutexUpdater.get(l_compactionbench0_G) == 1) {
-                    if (control.isFailing) throw new FailureAssistException();
                     if (Thread.interrupted()) throw new InterruptedException();
                 }
             }
@@ -441,20 +367,15 @@ public final class CompactionBench_compactTest_jmhTest {
             realTime += (System.nanoTime() - rt);
             if (CompactionBench_jmhType.tearInvocationMutexUpdater.compareAndSet(l_compactionbench0_G, 0, 1)) {
                 try {
-                    if (control.isFailing) throw new FailureAssistException();
                     if (l_compactionbench0_G.readyInvocation) {
                         l_compactionbench0_G.resetSnapshot();
                         l_compactionbench0_G.readyInvocation = false;
                     }
-                } catch (Throwable t) {
-                    control.isFailing = true;
-                    throw t;
                 } finally {
                     CompactionBench_jmhType.tearInvocationMutexUpdater.set(l_compactionbench0_G, 0);
                 }
             } else {
                 while (CompactionBench_jmhType.tearInvocationMutexUpdater.get(l_compactionbench0_G) == 1) {
-                    if (control.isFailing) throw new FailureAssistException();
                     if (Thread.interrupted()) throw new InterruptedException();
                 }
             }
@@ -470,54 +391,41 @@ public final class CompactionBench_compactTest_jmhTest {
         this.benchmarkParams = control.benchmarkParams;
         this.iterationParams = control.iterationParams;
         this.threadParams    = threadParams;
-        this.notifyControl   = control.notifyControl;
-        if (this.blackhole == null) {
-            this.blackhole = new Blackhole("Today's password is swordfish. I understand instantiating Blackholes directly is dangerous.");
-        }
+        this.notifyControl   = new Control();
+        this.blackhole       = new Blackhole("Today's password is swordfish. I understand instantiating Blackholes directly is dangerous.");
         if (threadParams.getSubgroupIndex() == 0) {
             RawResults res = new RawResults();
             CompactionBench_jmhType l_compactionbench0_G = _jmh_tryInit_f_compactionbench0_G(control);
 
             control.preSetup();
 
-
             control.announceWarmupReady();
             while (control.warmupShouldWait) {
                 if (CompactionBench_jmhType.setupInvocationMutexUpdater.compareAndSet(l_compactionbench0_G, 0, 1)) {
                     try {
-                        if (control.isFailing) throw new FailureAssistException();
                         if (!l_compactionbench0_G.readyInvocation) {
                             l_compactionbench0_G.readyInvocation = true;
                         }
-                    } catch (Throwable t) {
-                        control.isFailing = true;
-                        throw t;
                     } finally {
                         CompactionBench_jmhType.setupInvocationMutexUpdater.set(l_compactionbench0_G, 0);
                     }
                 } else {
                     while (CompactionBench_jmhType.setupInvocationMutexUpdater.get(l_compactionbench0_G) == 1) {
-                        if (control.isFailing) throw new FailureAssistException();
                         if (Thread.interrupted()) throw new InterruptedException();
                     }
                 }
                 l_compactionbench0_G.compactTest();
                 if (CompactionBench_jmhType.tearInvocationMutexUpdater.compareAndSet(l_compactionbench0_G, 0, 1)) {
                     try {
-                        if (control.isFailing) throw new FailureAssistException();
                         if (l_compactionbench0_G.readyInvocation) {
                             l_compactionbench0_G.resetSnapshot();
                             l_compactionbench0_G.readyInvocation = false;
                         }
-                    } catch (Throwable t) {
-                        control.isFailing = true;
-                        throw t;
                     } finally {
                         CompactionBench_jmhType.tearInvocationMutexUpdater.set(l_compactionbench0_G, 0);
                     }
                 } else {
                     while (CompactionBench_jmhType.tearInvocationMutexUpdater.get(l_compactionbench0_G) == 1) {
-                        if (control.isFailing) throw new FailureAssistException();
                         if (Thread.interrupted()) throw new InterruptedException();
                     }
                 }
@@ -536,39 +444,29 @@ public final class CompactionBench_compactTest_jmhTest {
                 while (control.warmdownShouldWait) {
                     if (CompactionBench_jmhType.setupInvocationMutexUpdater.compareAndSet(l_compactionbench0_G, 0, 1)) {
                         try {
-                            if (control.isFailing) throw new FailureAssistException();
                             if (!l_compactionbench0_G.readyInvocation) {
                                 l_compactionbench0_G.readyInvocation = true;
                             }
-                        } catch (Throwable t) {
-                            control.isFailing = true;
-                            throw t;
                         } finally {
                             CompactionBench_jmhType.setupInvocationMutexUpdater.set(l_compactionbench0_G, 0);
                         }
                     } else {
                         while (CompactionBench_jmhType.setupInvocationMutexUpdater.get(l_compactionbench0_G) == 1) {
-                            if (control.isFailing) throw new FailureAssistException();
                             if (Thread.interrupted()) throw new InterruptedException();
                         }
                     }
                     l_compactionbench0_G.compactTest();
                     if (CompactionBench_jmhType.tearInvocationMutexUpdater.compareAndSet(l_compactionbench0_G, 0, 1)) {
                         try {
-                            if (control.isFailing) throw new FailureAssistException();
                             if (l_compactionbench0_G.readyInvocation) {
                                 l_compactionbench0_G.resetSnapshot();
                                 l_compactionbench0_G.readyInvocation = false;
                             }
-                        } catch (Throwable t) {
-                            control.isFailing = true;
-                            throw t;
                         } finally {
                             CompactionBench_jmhType.tearInvocationMutexUpdater.set(l_compactionbench0_G, 0);
                         }
                     } else {
                         while (CompactionBench_jmhType.tearInvocationMutexUpdater.get(l_compactionbench0_G) == 1) {
-                            if (control.isFailing) throw new FailureAssistException();
                             if (Thread.interrupted()) throw new InterruptedException();
                         }
                     }
@@ -582,14 +480,10 @@ public final class CompactionBench_compactTest_jmhTest {
             if (control.isLastIteration()) {
                 if (CompactionBench_jmhType.tearTrialMutexUpdater.compareAndSet(l_compactionbench0_G, 0, 1)) {
                     try {
-                        if (control.isFailing) throw new FailureAssistException();
                         if (l_compactionbench0_G.readyTrial) {
                             l_compactionbench0_G.teardown();
                             l_compactionbench0_G.readyTrial = false;
                         }
-                    } catch (Throwable t) {
-                        control.isFailing = true;
-                        throw t;
                     } finally {
                         CompactionBench_jmhType.tearTrialMutexUpdater.set(l_compactionbench0_G, 0);
                     }
@@ -598,7 +492,6 @@ public final class CompactionBench_compactTest_jmhTest {
                     while (CompactionBench_jmhType.tearTrialMutexUpdater.get(l_compactionbench0_G) == 1) {
                         TimeUnit.MILLISECONDS.sleep(l_compactionbench0_G_backoff);
                         l_compactionbench0_G_backoff = Math.max(1024, l_compactionbench0_G_backoff * 2);
-                        if (control.isFailing) throw new FailureAssistException();
                         if (Thread.interrupted()) throw new InterruptedException();
                     }
                 }
@@ -612,7 +505,7 @@ public final class CompactionBench_compactTest_jmhTest {
             res.measuredOps *= opsPerInv;
             BenchmarkTaskResult results = new BenchmarkTaskResult(res.allOps, res.measuredOps);
             results.add(new SampleTimeResult(ResultRole.PRIMARY, "compactTest", buffer, benchmarkParams.getTimeUnit()));
-            this.blackhole.evaporate("Yes, I am Stephen Hawking, and know a thing or two about black holes.");
+            this.blackhole = null;
             return results;
         } else
             throw new IllegalStateException("Harness failed to distribute threads among groups properly");
@@ -628,19 +521,14 @@ public final class CompactionBench_compactTest_jmhTest {
         do {
             if (CompactionBench_jmhType.setupInvocationMutexUpdater.compareAndSet(l_compactionbench0_G, 0, 1)) {
                 try {
-                    if (control.isFailing) throw new FailureAssistException();
                     if (!l_compactionbench0_G.readyInvocation) {
                         l_compactionbench0_G.readyInvocation = true;
                     }
-                } catch (Throwable t) {
-                    control.isFailing = true;
-                    throw t;
                 } finally {
                     CompactionBench_jmhType.setupInvocationMutexUpdater.set(l_compactionbench0_G, 0);
                 }
             } else {
                 while (CompactionBench_jmhType.setupInvocationMutexUpdater.get(l_compactionbench0_G) == 1) {
-                    if (control.isFailing) throw new FailureAssistException();
                     if (Thread.interrupted()) throw new InterruptedException();
                 }
             }
@@ -665,20 +553,15 @@ public final class CompactionBench_compactTest_jmhTest {
             realTime += (System.nanoTime() - rt);
             if (CompactionBench_jmhType.tearInvocationMutexUpdater.compareAndSet(l_compactionbench0_G, 0, 1)) {
                 try {
-                    if (control.isFailing) throw new FailureAssistException();
                     if (l_compactionbench0_G.readyInvocation) {
                         l_compactionbench0_G.resetSnapshot();
                         l_compactionbench0_G.readyInvocation = false;
                     }
-                } catch (Throwable t) {
-                    control.isFailing = true;
-                    throw t;
                 } finally {
                     CompactionBench_jmhType.tearInvocationMutexUpdater.set(l_compactionbench0_G, 0);
                 }
             } else {
                 while (CompactionBench_jmhType.tearInvocationMutexUpdater.get(l_compactionbench0_G) == 1) {
-                    if (control.isFailing) throw new FailureAssistException();
                     if (Thread.interrupted()) throw new InterruptedException();
                 }
             }
@@ -694,17 +577,13 @@ public final class CompactionBench_compactTest_jmhTest {
         this.benchmarkParams = control.benchmarkParams;
         this.iterationParams = control.iterationParams;
         this.threadParams    = threadParams;
-        this.notifyControl   = control.notifyControl;
-        if (this.blackhole == null) {
-            this.blackhole = new Blackhole("Today's password is swordfish. I understand instantiating Blackholes directly is dangerous.");
-        }
+        this.notifyControl   = new Control();
+        this.blackhole       = new Blackhole("Today's password is swordfish. I understand instantiating Blackholes directly is dangerous.");
         if (threadParams.getSubgroupIndex() == 0) {
             CompactionBench_jmhType l_compactionbench0_G = _jmh_tryInit_f_compactionbench0_G(control);
 
             control.preSetup();
 
-
-            notifyControl.startMeasurement = true;
             RawResults res = new RawResults();
             int batchSize = iterationParams.getBatchSize();
             compactTest_ss_jmhStub(control, res, benchmarkParams, iterationParams, threadParams, blackhole, notifyControl, startRndMask, batchSize, l_compactionbench0_G);
@@ -713,14 +592,10 @@ public final class CompactionBench_compactTest_jmhTest {
             if (control.isLastIteration()) {
                 if (CompactionBench_jmhType.tearTrialMutexUpdater.compareAndSet(l_compactionbench0_G, 0, 1)) {
                     try {
-                        if (control.isFailing) throw new FailureAssistException();
                         if (l_compactionbench0_G.readyTrial) {
                             l_compactionbench0_G.teardown();
                             l_compactionbench0_G.readyTrial = false;
                         }
-                    } catch (Throwable t) {
-                        control.isFailing = true;
-                        throw t;
                     } finally {
                         CompactionBench_jmhType.tearTrialMutexUpdater.set(l_compactionbench0_G, 0);
                     }
@@ -729,7 +604,6 @@ public final class CompactionBench_compactTest_jmhTest {
                     while (CompactionBench_jmhType.tearTrialMutexUpdater.get(l_compactionbench0_G) == 1) {
                         TimeUnit.MILLISECONDS.sleep(l_compactionbench0_G_backoff);
                         l_compactionbench0_G_backoff = Math.max(1024, l_compactionbench0_G_backoff * 2);
-                        if (control.isFailing) throw new FailureAssistException();
                         if (Thread.interrupted()) throw new InterruptedException();
                     }
                 }
@@ -741,7 +615,7 @@ public final class CompactionBench_compactTest_jmhTest {
             long totalOps = opsPerInv;
             BenchmarkTaskResult results = new BenchmarkTaskResult(totalOps, totalOps);
             results.add(new SingleShotResult(ResultRole.PRIMARY, "compactTest", res.getTime(), benchmarkParams.getTimeUnit()));
-            this.blackhole.evaporate("Yes, I am Stephen Hawking, and know a thing or two about black holes.");
+            this.blackhole = null;
             return results;
         } else
             throw new IllegalStateException("Harness failed to distribute threads among groups properly");
@@ -754,19 +628,14 @@ public final class CompactionBench_compactTest_jmhTest {
             if (control.volatileSpoiler) return;
             if (CompactionBench_jmhType.setupInvocationMutexUpdater.compareAndSet(l_compactionbench0_G, 0, 1)) {
                 try {
-                    if (control.isFailing) throw new FailureAssistException();
                     if (!l_compactionbench0_G.readyInvocation) {
                         l_compactionbench0_G.readyInvocation = true;
                     }
-                } catch (Throwable t) {
-                    control.isFailing = true;
-                    throw t;
                 } finally {
                     CompactionBench_jmhType.setupInvocationMutexUpdater.set(l_compactionbench0_G, 0);
                 }
             } else {
                 while (CompactionBench_jmhType.setupInvocationMutexUpdater.get(l_compactionbench0_G) == 1) {
-                    if (control.isFailing) throw new FailureAssistException();
                     if (Thread.interrupted()) throw new InterruptedException();
                 }
             }
@@ -775,20 +644,15 @@ public final class CompactionBench_compactTest_jmhTest {
             realTime += (System.nanoTime() - rt);
             if (CompactionBench_jmhType.tearInvocationMutexUpdater.compareAndSet(l_compactionbench0_G, 0, 1)) {
                 try {
-                    if (control.isFailing) throw new FailureAssistException();
                     if (l_compactionbench0_G.readyInvocation) {
                         l_compactionbench0_G.resetSnapshot();
                         l_compactionbench0_G.readyInvocation = false;
                     }
-                } catch (Throwable t) {
-                    control.isFailing = true;
-                    throw t;
                 } finally {
                     CompactionBench_jmhType.tearInvocationMutexUpdater.set(l_compactionbench0_G, 0);
                 }
             } else {
                 while (CompactionBench_jmhType.tearInvocationMutexUpdater.get(l_compactionbench0_G) == 1) {
-                    if (control.isFailing) throw new FailureAssistException();
                     if (Thread.interrupted()) throw new InterruptedException();
                 }
             }
@@ -806,8 +670,6 @@ public final class CompactionBench_compactTest_jmhTest {
             return val;
         }
         synchronized(this.getClass()) {
-            try {
-            if (control.isFailing) throw new FailureAssistException();
             val = f_compactionbench0_G;
             if (val != null) {
                 return val;
@@ -816,10 +678,6 @@ public final class CompactionBench_compactTest_jmhTest {
             val.setup();
             val.readyTrial = true;
             f_compactionbench0_G = val;
-            } catch (Throwable t) {
-                control.isFailing = true;
-                throw t;
-            }
         }
         return val;
     }
