@@ -26,21 +26,13 @@ DESTROY() {
 
 
 RUN_CASSANDARA() {
-    #$YCSBHOME/cassandra/start_sevice.sh
     cd $CSRC
 
     #Delete data folder
     mkdir $SHARED_DATA
-    #rm -rf $SHARED_DATA/*
-    rm -rf $CSRC/data
-    rm -rf $CSRC/data/data
-    unlink $CSRC/data
-    unlink $SHARED_DATA
-    #ln -s $SHARED_DATA $CSRC/data
+    rm -rf $CSRC/data/*
     mkdir -p $CSRC/data/data
     $CSRC/bin/cassandra
-    #/usr/sbin/cassandra 	
-    #/usr/sbin/cassandra "--preferred=1"
     sleep 5
 }
 
@@ -51,7 +43,7 @@ RUN_YCSB() {
 
   # Create keyspace
   $CSRC/bin/cqlsh $HOST -e "create keyspace ycsb WITH REPLICATION = {'class'
-  : 'SimpleStrategy', 'replication_factor': 2 }; 
+  : 'SimpleStrategy', 'replication_factor': 3 }; 
   USE ycsb; 
   create table usertable (y_id varchar primary key, field0 varchar, field1 varchar, field2
   varchar,field3 varchar,field4 varchar, field5 varchar, field6 varchar,field7
@@ -60,7 +52,7 @@ RUN_YCSB() {
   sleep 5
 
   # Warmup Phase
-  $YCSBHOME/bin/ycsb load cassandra2 -p hosts=$HOST -p port=$PORT -p recordcount=$OPSCNT -P $YCSBHOME/workloads/workloada -s
+  $YCSBHOME/bin/ycsb load cassandra2-cql -p hosts=$HOST -p port=$PORT -p recordcount=$OPSCNT -P $YCSBHOME/workloads/workloada -s
 
   sleep 5
 
@@ -81,8 +73,8 @@ FlushDisk()
 cd $CODE
 DESTROY
 kill -9 `pidof java`
-#Install ycsb and casandara
 sleep 5
 RUN_CASSANDARA
-sleep 40
+sleep 30
 RUN_YCSB
+set +x
