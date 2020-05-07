@@ -46,7 +46,7 @@ public class DiskAccess
 
     public MessageOut createMessage()
     {
-	logger.info("@@@ DISK ACCESS MESSAGE OUT w/ LATENCY: {} @@@", Double.toString(this.latency));
+        logger.info("@@@ DISK ACCESS MESSAGE OUT w/ LATENCY: {} @@@", Double.toString(this.latency));
         return new MessageOut<DiskAccess>(MessagingService.Verb.DISK_ACCESS, this, serializer);
     }
 }

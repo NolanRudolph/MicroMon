@@ -53,7 +53,7 @@ public class DiskAccessVerbHandler implements IVerbHandler<DiskAccess>
                 logger.error("ERROR : " + e);
             }
 
-            logger.info("@@@@@@@ RETRIEVED AND SENDING PAYLOAD " + Double.toString(DALatency) + " @@@@@@@");
+            logger.info("@@@ DISK ACCESS MESSAGE RESPONDING w/ LATENCY: {} @@@", Double.toString(DALatency));
 
             // Create a return message and send it to requester
 		    DiskAccess retPayload = new DiskAccess(false, DALatency);
@@ -64,7 +64,7 @@ public class DiskAccessVerbHandler implements IVerbHandler<DiskAccess>
 	    }
 	    else
 	    {
-		    logger.info("@@@@@@@@@@ GOT MESSAGE WITH PAYLOAD : " + payload.latency + "@@@@@@@@@@@@@");
+            logger.info("@@@ DISK ACCESS RETRIEVED w/ LATENCY: {} @@@", payload.latency);
 		    DynamicEndpointSnitch.diskAccess.put(message.from, payload.latency);
 	    }
     }
