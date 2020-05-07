@@ -341,7 +341,7 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
             for (Map.Entry<InetAddress, ExponentiallyDecayingReservoir> entry : samples.entrySet())
             {
                 if (!diskAccess.containsKey(entry.getKey()))
-                    diskAccess.put(entry.getKey(), -1.0);
+                    diskAccess.put(entry.getKey(), 1.0);
 
                 MessagingService.instance().sendOneWay(message, entry.getKey());
             }
@@ -374,6 +374,9 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
             if (DAL > maxDAL && maxDAL != 40.51)
                 maxDAL = DAL;
         }
+
+        logger.info("WORST NWL: {}", maxNWL);
+        logger.info("WORST DAL: {}", maxDAL);
 
         // now make another pass to do the weighting based on the maximums we found before
         for (Map.Entry<InetAddress, Snapshot> entry : snapshots.entrySet())
