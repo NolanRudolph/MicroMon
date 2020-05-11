@@ -1,0 +1,13 @@
+--- LevelDbServer.cpp
++++ LevelDbServer.cpp
+@@ -104,7 +112,10 @@
+         options.create_if_missing = true;
+         options.error_if_exists = true;
+         options.write_buffer_size = writeBufferSizeMb_ * 1024 * 1024;
++        options.write_buffer_size_2 = writeBufferSizeMb_2 * 1024 * 1024;
+         options.block_cache = cache_;
++        options.num_levels = num_levels_;
++        options.compression = leveldb::kNoCompression;
+         leveldb::Status status = leveldb::DB::Open(options, directoryName_ + "/" + mapName, &db);
+         if (!status.ok()) {
+             // TODO check return code

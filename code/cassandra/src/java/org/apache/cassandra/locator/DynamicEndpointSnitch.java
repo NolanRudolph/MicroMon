@@ -371,50 +371,31 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
             double DAL = diskAccess.get(entry.getKey());
 
             // 40.51 is the DAL to represent host
-            if (DAL > maxDAL && DAL != 40.51)
+            if (DAL > maxDAL)
                 maxDAL = DAL;
         }
-
-        logger.info("WORST NWL: {}", maxNWL);
-        logger.info("WORST DAL: {}", maxDAL);
 
         // now make another pass to do the weighting based on the maximums we found before
         for (Map.Entry<InetAddress, Snapshot> entry : snapshots.entrySet())
         {
-            double score = (entry.getValue().getMedian() / maxNWL) * (1.0/3.0);
-            double influence = (diskAccess.get(entry.getKey()) / maxDAL) * (2.0/3.0);
-
-            logger.info("(" + entry.getKey().getHostAddress() + ") " 
-                        + "Initial Score: " + Double.toString(score) + " | "
-                        + "Influenced Score: " + Double.toString(score + influence));
-            logger.info("(" + entry.getKey().getHostAddress() + ") " 
-                        + "Network Latency: " + Double.toString(entry.getValue().getMedian()) + " | "
-                        + "maxNWL: " + Double.toString(maxNWL) + " |  ("
-                        + Double.toString(entry.getValue().getMedian()) + " / " + Double.toString(maxNWL) + ") * 0.5 = " + Double.toString(((entry.getValue().getMedian()) / maxNWL) * 0.5));
-            logger.info("Disk Access Latency: " + diskAccess.get(entry.getKey()) + " | "
-                        + "maxDAL: " + Double.toString(maxDAL) + " |  ("
-                        + diskAccess.get(entry.getKey()) + " / " + Double.toString(maxDAL) + ") * 0.5 = " + Double.toString((diskAccess.get(entry.getKey()) / maxDAL) * 0.5));
+            double score = (entry.getValue().getMedian() / maxNWL) * 0.7;
+            double influence = (diskAccess.get(entry.getKey()) / maxDAL) * 0.3;
 
             score += influence;
 
             // Score should not exceed 1.0
             score = score > 1.0 ? 1.0 : score;
 
-            newScores.put(entry.getKey(), score);
+            if (entry.getKey().getHostAddress().compareTo("192.168.1.1") == 0)
+            {
+                newScores.put(entry.getKey(), 0.0);
+            }
+            else
+            {
+                newScores.put(entry.getKey(), score);
+            }
         }
         
-        // DEBUGGING
-        logger.info("SCORES");
-        for (Map.Entry<InetAddress, Double> entry : newScores.entrySet())
-        {
-            logger.info(entry.getKey().getHostAddress() + " : " + entry.getValue());
-        }
-        logger.info("DISK ACCESS");
-        for (Map.Entry<InetAddress, Double> entry : diskAccess.entrySet())
-        {
-            logger.info(entry.getKey().getHostAddress() + " : " + entry.getValue());
-        }
-
         scores = newScores;
     }
 
