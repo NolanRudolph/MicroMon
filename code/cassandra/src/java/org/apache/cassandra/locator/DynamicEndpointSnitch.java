@@ -54,6 +54,11 @@ import org.slf4j.LoggerFactory;
  */
 public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILatencySubscriber, DynamicEndpointSnitchMBean
 {
+    // DynamicEndpointSnitch now has debugging access to system.log
+    protected static final Logger logger = LoggerFactory.getLogger(DynamicEndpointSnitch.class);
+
+    private static final boolean USE_SEVERITY = !Boolean.getBoolean("cassandra.ignore_dynamic_snit    ch_severity");
+
     private static final double ALPHA = 0.75; // set to 0.75 to make EDS more biased to towards the newer values
     private static final int WINDOW_SIZE = 100;
 
@@ -80,6 +85,9 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
     private final Runnable reset;
 
     private long timer = System.currentTimeMillis();
+    private final double NWeight = 0.7;
+    private final double SWeight = 0.1;
+    private final double DWeight = 0.1;
 
     // EDIT:
     // Stores important attributes about a node
@@ -98,10 +106,6 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
     // EDIT:
     // List to be referenced for updating scores
     HashMap<String, Node> nodeConfigs = new HashMap<String, Node>();
-
-    // EDIT:
-    // DynamicEndpointSnitch now has debugging access to system.log
-    protected static final Logger logger = LoggerFactory.getLogger(DynamicEndpointSnitch.class);
 
     public DynamicEndpointSnitch(IEndpointSnitch snitch)
     {
@@ -378,24 +382,36 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
         // now make another pass to do the weighting based on the maximums we found before
         for (Map.Entry<InetAddress, Snapshot> entry : snapshots.entrySet())
         {
-            double score = (entry.getValue().getMedian() / maxNWL) * 0.7;
-            double influence = (diskAccess.get(entry.getKey()) / maxDAL) * 0.3;
+            // NWeight: Network Latency Weight
+            // SWeight: Severity Weight
+            // DWeight: Disk Access Latency Weight
 
+            /* OUT OF THE BOX CASSANDRA */
+
+            double score = (entry.getValue().getMedian() / maxNWL);
+
+            // "Severity" is basically a measure of compaction activity (CASSANDRA-3722).
+            if (USE_SEVERITY)
+                score += getSeverity(entry.getKey());
+
+            /* OUT OF THE BOX CASSANDRA END */
+
+            double influence = (diskAccess.get(entry.getKey()) / maxDAL) * DWeight;
             score += influence;
 
             // Score should not exceed 1.0
             score = score > 1.0 ? 1.0 : score;
 
-            if (entry.getKey().getHostAddress().compareTo("192.168.1.1") == 0)
-            {
-                newScores.put(entry.getKey(), 0.0);
-            }
-            else
-            {
-                newScores.put(entry.getKey(), score);
-            }
+            newScores.put(entry.getKey(), score);
         }
         
+        logger.info("-= SCORES =-");
+        for (Map.Entry<InetAddress, Snapshot> entry : snapshots.entrySet())
+        {
+            logger.info("(" + entry.getKey().getHostAddress() + ") : " 
+                            + newScores.get(entry.getKey()));
+        }
+
         scores = newScores;
     }
 
@@ -438,6 +454,29 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
         return timings;
     }
 
+    public void setSeverity(double severity)
+    {
+        Gossiper.instance.addLocalApplicationState(ApplicationState.SEVERITY, StorageService.instance.valueFactory.severity(severity));
+    }
+
+    private double getSeverity(InetAddress endpoint)
+    {
+        EndpointState state = Gossiper.instance.getEndpointStateForEndpoint(endpoint);
+        if (state == null)
+            return 0.0;
+
+        VersionedValue event = state.getApplicationState(ApplicationState.SEVERITY);
+        if (event == null)
+            return 0.0;
+
+        return Double.parseDouble(event.value);
+    }
+
+    public double getSeverity()
+    {
+        return getSeverity(FBUtilities.getBroadcastAddress());
+    }
+
     // This returns whether a range query doing a query against merged is
     // likely to be faster than 2 sequential queries (i.e. merged vs. l1 + l2)
     public boolean isWorthMergingForRangeQuery(List<InetAddress> merged, List<InetAddress> l1, List<InetAddress> l2)
@@ -473,32 +512,3 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
         return maxScore;
     }
 }
-/* DEBUGGING STACK TRACE
-logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-logger.info("(" + host.getHostAddress() + ") Latency : " + Long.toString(latency));
-StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
-logger.info("Caller: " + stackTraceElements[2].getFileName());
-logger.info("Method: " + stackTraceElements[2].getMethodName() + " @ Line " + stackTraceElements[2].getLineNumber());
-logger.info("       Caller: " + stackTraceElements[3].getFileName());
-logger.info("       Method: " + stackTraceElements[3].getMethodName() + " @ Line " + stackTraceElements[3].getLineNumber());
-logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-*/
-
-/* OLD METHOD OF SCORE INFLUENCE
-// Initialize influence and retrieve respective node
-double influence = 0.0; 
-Node curNode = nodeConfigs.get(entry.getKey().getHostAddress());
-
-// Divide by maxDiskAccess analagous to the score calculation seen above
-influence += curNode.diskAccess / maxDiskAccess;
-
-// Add this to the score
-score += influence;
-*/
-
-/* STEP 3 - GETTING CASSANDRA LATENCY SCORES
-long allVals[] = entry.getValue().getValues();
-logger.info("(" + entry.getKey().getHostAddress() + ") Latencies: " + Arrays.toString(allVals));
-String recent = Long.toString(allVals[allVals.length - 1]);
-logger.info("(" + entry.getKey().getHostAddress() + ") Latency : " + recent);
-*/

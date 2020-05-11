@@ -9,4 +9,4 @@ kill -9 `pidof java`
 sleep 3
 $CODE/cassandra/bin/cassandra
 
-set +x
+set -x

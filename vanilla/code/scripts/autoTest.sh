@@ -1,7 +1,7 @@
 #!/bin/bash
 set -x
 YCSB_CLIENT=$CODE/mapkeeper/ycsb/YCSB
-OPSCNT=10000
+OPSCNT=500000
 
 #Note. for remote host, make the changes in
 #/etc/cassandra.yaml for the server to listen 

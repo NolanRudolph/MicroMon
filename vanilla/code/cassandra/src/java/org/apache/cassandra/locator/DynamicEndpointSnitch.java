@@ -39,12 +39,16 @@ import org.apache.cassandra.service.StorageService;
 import org.apache.cassandra.utils.FBUtilities;
 import org.apache.cassandra.utils.MBeanWrapper;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A dynamic snitch that sorts endpoints by latency with an adapted phi failure detector
  */
 public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILatencySubscriber, DynamicEndpointSnitchMBean
 {
+    protected static final Logger logger = LoggerFactory.getLogger(DynamicEndpointSnitch.class);
+
     private static final boolean USE_SEVERITY = !Boolean.getBoolean("cassandra.ignore_dynamic_snitch_severity");
 
     private static final double ALPHA = 0.75; // set to 0.75 to make EDS more biased to towards the newer values
@@ -320,9 +324,17 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
             // "Severity" is basically a measure of compaction activity (CASSANDRA-3722).
             if (USE_SEVERITY)
                 score += getSeverity(entry.getKey());
+
             // lowest score (least amount of badness) wins.
             newScores.put(entry.getKey(), score);
         }
+
+        logger.info("SCORES");
+        for (Map.Entry<InetAddress, Double> entry : newScores.entrySet())
+        {
+            logger.info(entry.getKey().getHostAddress() + " : " + entry.getValue());
+        }
+
         scores = newScores;
     }
 

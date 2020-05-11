@@ -20,7 +20,7 @@ RUN_YCSB() {
   sleep 5
 
   # Warmup Phase
-  $YCSBHOME/bin/ycsb load cassandra-cql -p hosts=$HOST -p port=$PORT -p recordcount=$OPSCNT -P $YCSBHOME/workloads/workloada -s
+  $YCSBHOME/bin/ycsb load cassandra2-cql -p hosts=$HOST -p port=$PORT -p recordcount=$OPSCNT -P $YCSBHOME/workloads/workloada -s
 
   sleep 5
 
@@ -29,7 +29,7 @@ RUN_YCSB() {
   sleep 3
 
   # Run Phase
-  $YCSBHOME/bin/ycsb run cassandra-cql -p hosts=$HOST -p port=$PORT -p recordcount=$OPSCNT -P $YCSBHOME/workloads/workloada  
+  $YCSBHOME/bin/ycsb run cassandra2-cql -p hosts=$HOST -p port=$PORT -p recordcount=$OPSCNT -P $YCSBHOME/workloads/workloada  
 
 }
 

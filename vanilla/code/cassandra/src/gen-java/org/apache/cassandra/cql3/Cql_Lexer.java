@@ -1,4 +1,4 @@
-// $ANTLR 3.5.2 Lexer.g 2020-05-10 17:37:49
+// $ANTLR 3.5.2 Lexer.g 2020-05-10 17:37:44
 
     package org.apache.cassandra.cql3;
 
