@@ -2,7 +2,8 @@
 
 # PREREQUISITES
 # 1. Be sure to mount the proper HDD/SSD onto your home directory
-# 2. Be ready to input username/password for repository cloning
+# 2. You MUST be in the FullDynamic branch, "git checkout FullDynamic"
+# 3. Run this script from the ~/butterflyeffect directory
 
 # Program should quit when error occurs, and allows telegrammed commands
 set -xe
@@ -18,17 +19,8 @@ printf "\n*** IT IS OKAY TO RECEIVE \"error: no alternatives\" ERROR ***\n"
 sudo update-java-alternatives -s java-1.8.0-openjdk-amd64
 java -version # This should output " openjdk version "1.8.0_252" "
 
+
 ## SETTING UP EDITED CASSANDRA ##
-
-# This will be placed in home directory
-cd ~
-
-# Pull the main repository
-git clone https://github.com/SudarsunKannan/butterflyeffect.git
-cd butterflyeffect
-
-# Switch to the proper branch
-git checkout FullDynamic
 
 # Create a required directory
 sudo mkdir /root/.m2
@@ -37,7 +29,8 @@ sudo chown -R $USER /root/.m2
 
 # Compile the source code
 cd code/cassandra
-bash setup.sh
+bash code/cassandra/setup.sh
+
 
 ## SETTING UP VANILLA ##
 
@@ -78,7 +71,7 @@ cd vanilla/code/cassandra
 bash setup.sh
 
 echo "*** ONE LAST STEP ***"
-echo "On line 615 and 692 of ~/vanilla/code/cassandra/conf/cassandra.yaml, please change this to the IP that will be used on this node for Cassandra"
-echo "On line 428, please change the seeds to include the IP of all nodes to be used in Cassandra "
+echo "On line 615 and 692 of ~/vanilla/code/cassandra/conf/cassandra.yaml and ~/butterflyeffect/code/cassandra/conf/cassandra.yaml, please change this to the IP that will be used on this node for Cassandra"
+echo "On line 428, again in both files, please change the seeds to include the IP of all nodes to be used in Cassandra"
 
 set +x
