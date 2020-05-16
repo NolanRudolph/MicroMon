@@ -16,7 +16,7 @@ sudo apt-get install -y openjdk-8-jdk maven ant
 
 # Switch to compatible JDK version
 printf "\n*** IT IS OKAY TO RECEIVE \"error: no alternatives\" ERROR ***\n"
-printf "\n*** IF YOU RECEIVE "directory does not exist: /usr/lib/jvm/java-1.8.0-openjdk-amd64", READ COMMENTS IN THIS SCRIPT ***\n"
+printf "\n*** IF YOU RECEIVE \"directory does not exist: /usr/lib/jvm/java-1.8.0-openjdk-amd64\", READ COMMENTS IN THIS SCRIPT ***\n"
 # Hey, sorry that happened. This is most likely due to the architecture of the machine you're using.
 # Go ahead and run "$ ls /usr/lib/jvm" and note the file that's prefixed with "java-1.8.0-openjdk-"
 # In the below line, adjust "amd64" to the system type that proceeds "java-1.8.0-openjdk-" 
