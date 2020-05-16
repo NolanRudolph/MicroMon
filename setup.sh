@@ -28,7 +28,6 @@ sudo mkdir /root/.m2/repository
 sudo chown -R $USER /root/.m2
 
 # Compile the source code
-cd code/cassandra
 bash code/cassandra/setup.sh
 
 
