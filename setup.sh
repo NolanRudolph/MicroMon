@@ -9,6 +9,7 @@ set -xe
 
 ## INSTALL REQUIRED SOFTWARE ##
 
+#<<WgetError
 sudo apt-get update
 sudo apt-get install -y openjdk-8-jdk maven ant
 
@@ -17,7 +18,6 @@ printf "\n*** IT IS OKAY TO RECEIVE \"error: no alternatives\" ERROR ***\n"
 sudo update-java-alternatives -s java-1.8.0-openjdk-amd64
 java -version # This should output " openjdk version "1.8.0_252" "
 
-<<test
 ## SETTING UP EDITED CASSANDRA ##
 
 # This will be placed in home directory
@@ -39,15 +39,23 @@ sudo chown -R $USER /root/.m2
 cd code/cassandra
 bash setup.sh
 
-test
-
 ## SETTING UP VANILLA ##
 
 # This will be placed in home directory
 cd ~
 
 # Get the source code
+echo "*** THIS HAS A CHANCE OF FAILING, IF IT DOES SEE COMMENTS IN THIS SCRIPT ***"
+# Hey, sorry it failed. 
+# Please go to: https://fossies.org/linux/misc/apache-cassandra-3.11.6-src.tar.gz/
+# Then press the link at the top, "Contents of <link>" and download to your local computer
+# Then use "$ scp path/to/downloads/apache-cassandra-3.11.6-src.tar.gz <cloudlab node>:~"
+# Uncomment lines 12 and 56 and restart this script :)
+
 wget https://fossies.org/linux/misc/apache-cassandra-3.11.6-src.tar.gz
+#WgetError
+
+cd ~
 tar -xzf apache-cassandra-3.11.6-src.tar.gz
 rm -f apache-cassandra-3.11.6-src.tar.gz
 mv apache-cassandra-3.11.6-src cassandra
@@ -60,13 +68,17 @@ mv cassandra vanilla/code
 # Copy configuration files to vanilla Cassandra
 CODE=~/butterflyeffect/code
 cp -r $CODE/mapkeeper vanilla/code
-cp $CODE/cassandra/conf/cassandra.yaml vanilla/code/cassandra/conf/cassandra.yaml
+cp $CODE/cassandra/conf/cassandra.yaml vanilla/code/cassandra/conf
 sed -i "s/butterflyeffect/vanilla/g" vanilla/code/cassandra/conf/cassandra.yaml
-cp $CODE/cassandra/conf/cassandra-topology.properties vanilla/code/cassandra/conf/cassandra-topology.properties
+cp $CODE/cassandra/conf/cassandra-topology.properties vanilla/code/cassandra/conf
 cp $CODE/cassandra/setup.sh vanilla/code/cassandra
 
 # Compile source code
 cd vanilla/code/cassandra
 bash setup.sh
+
+echo "*** ONE LAST STEP ***"
+echo "On line 615 and 692 of ~/vanilla/code/cassandra/conf/cassandra.yaml, please change this to the IP that will be used on this node for Cassandra"
+echo "On line 428, please change the seeds to include the IP of all nodes to be used in Cassandra "
 
 set +x
