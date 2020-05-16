@@ -4,6 +4,9 @@
 # 1. Be sure to mount the proper HDD/SSD onto your home directory
 # 2. Be ready to input username/password for repository cloning
 
+# Program should quit when error occurs, and allows telegrammed commands
+set -xe
+
 ## INSTALL REQUIRED SOFTWARE ##
 
 sudo apt-get update
@@ -38,7 +41,6 @@ bash setup.sh
 
 test
 
-git clone https://github.com/SudarsunKannan/butterflyeffect.git
 ## SETTING UP VANILLA ##
 
 # This will be placed in home directory
@@ -67,4 +69,4 @@ cp $CODE/cassandra/setup.sh vanilla/code/cassandra
 cd vanilla/code/cassandra
 bash setup.sh
 
-
+set +x
