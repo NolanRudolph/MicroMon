@@ -67,6 +67,7 @@ mv cassandra vanilla/code
 # Copy configuration files to vanilla Cassandra
 CODE=~/butterflyeffect/code
 cp -r $CODE/mapkeeper vanilla/code
+cp -r $CODE/scripts vanilla/code
 cp $CODE/cassandra/conf/cassandra.yaml vanilla/code/cassandra/conf
 sed -i "s/butterflyeffect/vanilla/g" vanilla/code/cassandra/conf/cassandra.yaml
 cp $CODE/cassandra/conf/cassandra-topology.properties vanilla/code/cassandra/conf
