@@ -363,6 +363,7 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
             }
             else
             {
+                // Scoring method by "Out of the Box" Cassandra
                 score = (entry.getValue().getMedian() / maxNWL);
 
                 // "Severity" is basically a measure of compaction activity
