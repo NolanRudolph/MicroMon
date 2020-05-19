@@ -4,6 +4,7 @@
 *.jar
 *.pom
 *.log
+conf
 logs
 data
 cassandra.config

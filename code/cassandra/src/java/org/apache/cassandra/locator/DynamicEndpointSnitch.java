@@ -86,6 +86,7 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
 
     // Custom Variables for Dynamic Measurement
     private long timer = System.currentTimeMillis();
+    private String DAPath = "";
     private double alpha = 0.0;
 
     public DynamicEndpointSnitch(IEndpointSnitch snitch)
@@ -100,10 +101,12 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
         {
             // NOTE: cassandra.config SHOULD BE AS FOLLOWS
             // (Only include what is between "< >" on each line)
-            // Line 1: <(float) alpha> - The weight distribution parameter
+            // Line 1: <(string) DAPath> - The path to the file containing disk access latency
+            // Line 2: <(float) alpha> - The weight distribution parameter
 
-            File file = new File("cassandra.config");
+            File file = new File("config.txt");
             BufferedReader br = new BufferedReader(new FileReader(file));
+            DAPath = br.readLine();
             alpha = Double.parseDouble(br.readLine());
         }
         catch (Exception e)
@@ -295,7 +298,7 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
             // Retrieve current disk access to tell other nodes
             try
             {
-                File file = new File("/users/NolanR/diskAccess.txt");
+                File file = new File(DAPath);
                 BufferedReader br = new BufferedReader(new FileReader(file));
                 myDAL = Double.parseDouble(br.readLine());
             }
@@ -351,30 +354,40 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
         for (Map.Entry<InetAddress, Snapshot> entry : snapshots.entrySet())
         {
             // Initial score that came with "Out of the Box" Cassandra
-            double score = (entry.getValue().getMedian() / maxNWL);
+            double score = 0.0;
 
-            // "Severity" is basically a measure of compaction activity
-            if (USE_SEVERITY)
-                score += getSeverity(entry.getKey());
+            // Server should not be considered (128.110.96.121)
+            if (entry.getKey().getHostAddress().compareTo("128.110.96.121") == 0)
+            {
+                score = 1.0;
+            }
+            else
+            {
+                score = (entry.getValue().getMedian() / maxNWL);
 
-            // SCORE IS CALCULATED HERE: [score * alpha] + [influence * (1 - alpha)]
-            // `alpha` : Weight of the network latency, i.e. score
-            // (1 - `alpha`) : Weight of the micro metric monitoring, i.e. influence
+                // "Severity" is basically a measure of compaction activity
+                if (USE_SEVERITY)
+                    score += getSeverity(entry.getKey());
 
-            // [score * alpha] ~ `alpha` weight applied to Network Latency
-            score *= alpha;
+                // SCORE IS CALCULATED HERE: [score * alpha] + [influence * (1 - alpha)]
+                // `alpha` : Weight of the network latency, i.e. score
+                // (1 - `alpha`) : Weight of the micro metric monitoring, i.e. influence
 
-            // Micro-metric influence on network latency
-            double influence = (diskAccess.get(entry.getKey()) / maxDAL);
+                // [score * alpha] ~ `alpha` weight of Network Latency
+                score *= alpha;
 
-            // [influence * (1 - alpha)] ~ (1 - `alpha`) weight applied to Micro Metric Latency
-            influence *= (1 - alpha);
+                // Micro-metric influence on network latency
+                double influence = (diskAccess.get(entry.getKey()) / maxDAL);
 
-            // Score combined with influence
-            score += influence;
+                // [influence * (1 - alpha)] ~ (1 - `alpha`) weight of Micro Metric Latency
+                influence *= (1 - alpha);
 
-            // Score should not exceed 1.0
-            score = score > 1.0 ? 1.0 : score;
+                // Score combined with influence
+                score += influence;
+
+                // Score should not exceed 1.0
+                score = score > 1.0 ? 1.0 : score;
+            }
 
             newScores.put(entry.getKey(), score);
         }

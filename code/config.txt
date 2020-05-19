@@ -1,0 +1,2 @@
+/users/NolanR/diskAccess.txt
+0.5
