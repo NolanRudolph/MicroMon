@@ -1,0 +1,9 @@
+You need two files for MicroMon to function correctly:
+1. In your home directory, i.e. "~/", a file "diskAccess.txt"
+    - This should be dynamically modified as it is constantly being ready by MicroMon
+    - e.g. "diskAccess.txt" containing "1000" would denote a disk access latency of 1000 us
+2. In your Cassandra directory, i.e. "~/butterflyeffect/code/cassandra", a file "cassandra.config"
+    - This includes a static float variable, alpha, which is the weight distribution
+    - Weight for Network Latency: alpha
+    - Weight for Micro Metric influence: 1 - alpha
+    - e.g. "cassandra.config" containing "0.5" would give a 50-50 weight distribution

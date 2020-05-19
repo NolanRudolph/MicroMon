@@ -84,28 +84,9 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
     private final Runnable update;
     private final Runnable reset;
 
+    // Custom Variables for Dynamic Measurement
     private long timer = System.currentTimeMillis();
-    private final double NWeight = 0.7;
-    private final double SWeight = 0.1;
-    private final double DWeight = 0.1;
-
-    // EDIT:
-    // Stores important attributes about a node
-    public class Node
-    {
-        String name;
-        String ip;
-
-        public Node(String n, String IP)
-        {
-            name = n;
-            ip = IP;
-        }
-    }
-
-    // EDIT:
-    // List to be referenced for updating scores
-    HashMap<String, Node> nodeConfigs = new HashMap<String, Node>();
+    private double alpha = 0.0;
 
     public DynamicEndpointSnitch(IEndpointSnitch snitch)
     {
@@ -114,30 +95,21 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
 
     public DynamicEndpointSnitch(IEndpointSnitch snitch, String instance)
     {
-        // EDIT:
-        // This gathers all the details from my file pertaining to node
-        // attributes
+        // Gathers information required for Dynamic measurements
         try
         {
-            File file = new File("cassandra_config.txt");
-            BufferedReader br = new BufferedReader(new FileReader(file));
-            int nodes = Integer.parseInt(br.readLine());
-            for (int i = 0; i < nodes; i++)
-            {
-                String curConfig = br.readLine();
-                String[] configParse = curConfig.split(",");
-                String name  = configParse[0];  // Name of Node
-                String ip    = configParse[1];  // IP of Node
-                Node newNode = new Node(name, ip);
+            // NOTE: cassandra.config SHOULD BE AS FOLLOWS
+            // (Only include what is between "< >" on each line)
+            // Line 1: <(float) alpha> - The weight distribution parameter
 
-                // Store back into nodeConfigs with key being the IP
-                // This allows for easy indexing since this module heavily utilizes IPs
-                nodeConfigs.put(ip, newNode);
-            }
+            File file = new File("cassandra.config");
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            alpha = Double.parseDouble(br.readLine());
         }
         catch (Exception e)
         {
             logger.error("ERROR: " + e);
+            logger.error("Please see coments in DynamicEndpointsnitch.java for explanation.");
         }
 
         mbeanName = "org.apache.cassandra.db:type=DynamicEndpointSnitch";
@@ -239,10 +211,7 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
         sortByProximityWithScore(address, addresses);
     }
 
-    // EDIT: Here all my work below comes into place. The points are being
-    // constantly updated via updateScores(), and when the replication factor
-    // > 1, it is utilized using this method. I've since deleted other sorting
-    // methods such as sortByProximityWithBadness.
+    // NOTE: This method will only be utilized if replication factor > 1
     private void sortByProximityWithScore(final InetAddress address, List<InetAddress> addresses)
     {
         // Scores can change concurrently from a call to this method. But Collections.sort() expects
@@ -374,7 +343,6 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
             // Disk Access Latency
             double DAL = diskAccess.get(entry.getKey());
 
-            // 40.51 is the DAL to represent host
             if (DAL > maxDAL)
                 maxDAL = DAL;
         }
@@ -382,21 +350,27 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
         // now make another pass to do the weighting based on the maximums we found before
         for (Map.Entry<InetAddress, Snapshot> entry : snapshots.entrySet())
         {
-            // NWeight: Network Latency Weight
-            // SWeight: Severity Weight
-            // DWeight: Disk Access Latency Weight
-
-            /* OUT OF THE BOX CASSANDRA */
-
+            // Initial score that came with "Out of the Box" Cassandra
             double score = (entry.getValue().getMedian() / maxNWL);
 
-            // "Severity" is basically a measure of compaction activity (CASSANDRA-3722).
+            // "Severity" is basically a measure of compaction activity
             if (USE_SEVERITY)
                 score += getSeverity(entry.getKey());
 
-            /* OUT OF THE BOX CASSANDRA END */
+            // SCORE IS CALCULATED HERE: [score * alpha] + [influence * (1 - alpha)]
+            // `alpha` : Weight of the network latency, i.e. score
+            // (1 - `alpha`) : Weight of the micro metric monitoring, i.e. influence
 
-            double influence = (diskAccess.get(entry.getKey()) / maxDAL) * DWeight;
+            // [score * alpha] ~ `alpha` weight applied to Network Latency
+            score *= alpha;
+
+            // Micro-metric influence on network latency
+            double influence = (diskAccess.get(entry.getKey()) / maxDAL);
+
+            // [influence * (1 - alpha)] ~ (1 - `alpha`) weight applied to Micro Metric Latency
+            influence *= (1 - alpha);
+
+            // Score combined with influence
             score += influence;
 
             // Score should not exceed 1.0
@@ -405,6 +379,7 @@ public class DynamicEndpointSnitch extends AbstractEndpointSnitch implements ILa
             newScores.put(entry.getKey(), score);
         }
         
+        // Real-time visualization of node scores
         logger.info("-= SCORES =-");
         for (Map.Entry<InetAddress, Snapshot> entry : snapshots.entrySet())
         {

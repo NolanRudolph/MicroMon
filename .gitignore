@@ -4,7 +4,7 @@
 *.jar
 *.pom
 *.log
-system.log*
-debug.log*
-data/*
+logs
+data
+cassandra.config
 YCSB
