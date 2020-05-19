@@ -82,5 +82,6 @@ set +x
 printf "\n\n*** ONE LAST STEP ***\n"
 echo "On line 615 and 692 of ~/vanilla/code/cassandra/conf/cassandra.yaml and ~/butterflyeffect/code/cassandra/conf/cassandra.yaml, please change this to the IP that will be used on this node for Cassandra"
 echo "On line 428, again in both files, please change the seeds to include the IP of all nodes to be used in Cassandra"
+echo "On line 19 of ~/vanilla/code/cassandra/conf/cassandra-rackdc.properties, all nodes should be in different datacenters. Change \"dc1\" to the \"dc#\" where # is different on all nodes."
 
 set +e
