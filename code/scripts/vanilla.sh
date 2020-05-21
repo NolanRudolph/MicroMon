@@ -14,6 +14,6 @@ rm -rf ~/ssd/vanilla/code/cassandra/data/* ~/ssd/micromon/code/cassandra/data/*
 bash ~/ssd/vanilla/code/scripts/flush.sh
 
 # Begin cassandra
-~/ssd/micromon/code/cassandra/bin/cassandra
+~/ssd/vanilla/code/cassandra/bin/cassandra
 
 set +ex
