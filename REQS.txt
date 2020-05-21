@@ -4,4 +4,17 @@ You need two files for MicroMon to function correctly:
     - This second line is a static float variable, alpha, which is the weight distribution
         - Weight for Network Latency: alpha
         - Weight for Micro Metric influence: 1 - alpha
-    - e.g. "cassandra.config" containing "/users/NolanR/diskAccess.txt\n0.5" would provide the path of the disk access as "/home/NolanR/diskAccess.txt" and give a 50-50 weight distribution
+    - The third line is either 0 or 1, 0 if you intend on using the server to service requests, and 1 if you want to exclude the server from being considered
+    - The fourth line is the IP address of the server
+
+Example of config.txt:
+/users/NolanR/diskAccess.txt
+0.25
+1
+192.168.1.1
+
+This configuration sets the following:
+    1. The path to the dynamic disk access variable as "/users/NolanR/diskaccess.txt
+    2. The alpha to 0.25, meaning the network latency weight is 0.25, disk access latency is 0.75
+    3. 1 denotes that we wish to exclude the server from request consideration
+    4. This sets the IP address of the server to "192.168.1.1"
