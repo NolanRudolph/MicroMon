@@ -21,7 +21,7 @@ This file explains how to setup my project. Please follow the *CLIENT* or *SERVE
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1. seeds on line 428 includes the IP addresses of all nodes in the cluster with a comma delimiter  
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2. listen_address on line 615 is the IP address of this node  
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3. rpc_address on line 692 is the IP address of this node  
-    b. Only on server, change cassandra-topology.properties so that they replicate a format identical to lines 18-20; That is, &nbsp;&nbsp;&nbsp;&nbsp;IP=DC#:RAC#. Create an entry like this for each node in the cluster, including itself.  
+    b. Only on server, change cassandra-topology.properties so that they replicate a format identical to lines 18-20; That is, &nbsp;&nbsp;&nbsp;&nbsp;IP=DC#:RAC#. An entry like this should be created for each node found within "seeds" from line 428 of cassandra.yaml. I.e., create an entry for each node in the cluster, including itself.  
     c. Change cassandra-rackdc.properties so that  
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1. dc=dc# on line 19, # reflects the same datacenter as its configuration in the server's cassandra-topology.properties  
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2. rack=rack# on line 20, # reflects the same rack as its configuration in the server's cassandra-topology.properties
