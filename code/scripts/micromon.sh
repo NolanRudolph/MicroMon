@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -ex
+set -x
 
 # End existing Cassandra processes
 kill -9 `pidof java`
@@ -16,4 +16,4 @@ bash ~/micromon/code/scripts/flush.sh
 # Begin cassandra
 ~/micromon/code/cassandra/bin/cassandra
 
-set +ex
+set +x
