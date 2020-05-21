@@ -1,2 +1,4 @@
-/users/NolanR/diskAccess.txt
+/users/skannan/ssd/diskAccess.txt
 0.5
+0
+140.221.248.102

@@ -33,5 +33,4 @@ requestdistribution=zipfian
 threadcount=4
 readallfields=true
 fieldcount=1
-fieldlength=2048
-#maxexecutiontime=100
+fieldlength=4096
