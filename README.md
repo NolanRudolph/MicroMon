@@ -23,8 +23,8 @@ This file explains how to setup my project. Please follow the *CLIENT* or *SERVE
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3. rpc_address on line 692 is the IP address of this node  
     b. Only on server, change cassandra-topology.properties so that they replicate a format identical to lines 18-20; That is, &nbsp;&nbsp;&nbsp;&nbsp;IP=DC#:RAC#. An entry like this should be created for each node found within "seeds" from line 428 of cassandra.yaml. &nbsp;&nbsp;&nbsp;&nbsp;I.e., create an entry for each node in the cluster, including itself.  
     c. Change cassandra-rackdc.properties so that  
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1. dc=dc# on line 19, where # reflects the same datacenter as its configuration in the server's </br>&nbsp;&nbsp;&nbsp;&nbsp;cassandra-topology.properties  
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2. rack=rack# on line 20, where # reflects the same rack as its configuration in the server's </br>&nbsp;&nbsp;&nbsp;&nbsp;cassandra-topology.properties
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1. dc=dc# on line 19, where # reflects the same datacenter as its configuration in the server's </br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cassandra-topology.properties  
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2. rack=rack# on line 20, where # reflects the same rack as its configuration in the server's </br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cassandra-topology.properties
 
 ## RUNNING TESTS
 1. Make sure that setvars.sh has been sourced from ~/butterflyeffect/code. You can check this by calling "echo $CODE" and making sure it equates to ~/butterflyeffect/code.
