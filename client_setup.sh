@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# PREREQUISITES
+# 1. Be sure to mount the proper HDD/SSD onto your home directory
+# 2. You MUST be in the FullDynamic branch, "git checkout FullDynamic"
+
+# Program should quit when error occurs, and allows telegrammed commands
 set -xe
 
 # Home directory install
