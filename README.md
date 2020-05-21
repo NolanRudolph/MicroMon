@@ -13,7 +13,7 @@ This file explains how to setup my project. Please follow the *CLIENT* or *SERVE
 1. Run "bash scripts/client\_setup.sh"
 2. The same instructions are provided by the end of this script, but change the HOST variable in ~/butterflyeffect/code/scripts/setvars.sh to the IP of the host node in the Cassandra cluster. Then run "source scripts/setvars.sh" from ~/butterflyeffect/code.
 3. Once the server and replicas have followed the SERVERS & REPLICAS section, make sure you are in directory ~/butterflyeffect/code and run "bash scripts/customTest.sh"
-    a. Note: This is where you should change
+    a. Note: This is where you can change the number of requests (line 4) and workloads (line 23 + line 32).
 
 ## SERVER & REPLICAS
 1. Make sure you follow REQS.txt found in the root directory of this repository
@@ -29,3 +29,22 @@ This file explains how to setup my project. Please follow the *CLIENT* or *SERVE
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2. rack=rack# on line 20, # reflects the same rack as its configuration in the server's cassandra-topology.properties
 
 ## RUNNING TESTS
+1. Make sure that setvars.sh has been sourced from ~/butterflyeffect/code. You can check this by calling "echo $CODE" and making sure it equates to ~/butterflyeffect/code.
+2. Make sure that the cassandra.yaml, casssandra-rackdc.properties, and cassandra-topology.properties (on the server) have all been updated to hold the correct content
+3. On the server node and all three replica nodes, from ~/butterflyeffect/code, as simultaneously as possible call "bash scripts/restart.sh". This kills any Cassandra processes, deletes the Cassandra data folders, and restarts Cassandra. Therefore, this works as the name suggests: A restart from a previous test, but also works perfectly fine for the first test that is run.
+4. Wait until you see "No gossip backlog; proceeding" from the Cassandra logger on all nodes.
+5. Now, on the client node, make sure "echo $HOST" returns the IP of the server. If it does not, edit the HOST variable in ~/butterflyeffect/code/scripts/setvars.sh, and then run "source scripts/setvars.sh" from ~/butterflyeffect/code. 
+6. On all nodes, run "bash ~/butterflyeffect/code/scripts/flush.sh"
+7. On the client node, make sure line 4 and line 23/32 of ~/butterflyeffect/codescripts/customTest.sh are updated to your liking, which are number of requests and workload type respectively. Then from ~/butterflyeffect/code, run "bash scripts/customTest.sh".
+8. IMPORTANT: Between the load phase and run phase, make sure to run "bash ~/butterflyeffect/code/scripts/flush.sh" on all nodes but the script node.
+
+## SWITCHING TO VANILLA
+Note: This will be followed on all nodes except Client
+1. Run "cd ~/vanilla/code"
+2. Run "source scripts/setvars.sh"
+3. If you have followed step 3 from *SERVER & REPLICA*, run the following commands:
+    a. "cp ~/butterflyeffect/code/cassandra/conf/cassandra.yaml ~/vanilla/code/cassandra/conf/cassandra.yaml"
+    b. "cp ~/butterflyeffect/code/cassandra/conf/cassandra-rackdc.yaml ~/vanilla/code/cassandra/conf/cassandra-rackdc.properties"
+    c. On server, "cp ~/butterflyeffect/code/cassandra/conf/cassandra-topology.properties ~/vanilla/code/cassandra/conf/cassandra-topology.properties"
+    d. "vim ~/vanilla/code/cassandra/conf/cassandra.yaml", and in this file, type ":%s/butterflyeffect/vanilla/g", then ":wq"
+4. If you have not followed step 3 from *SERVER & REPLICA*, I strongly encourage you to do this first. If not, follow step 3 from *SERVER & REPLICA*, except replace all instances of "butterflyeffect" with "vanilla"
