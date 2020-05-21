@@ -25,14 +25,12 @@ rm -rf .local/lib/python2.7/site-packages/cqlshlib
 mv apache-cassandra-3.11.6-src/pylib/cqlshlib ~/.local/lib/python2.7/site-packages
 rm -rf apache-cassandra-3.11.6-src.tar.gz apache-cassandra-3.11.6-src
 
-# Clone butterflyeffect
-echo "Please enter GitHub username and password for butterflyeffect:"
-git clone https://github.com/SudarsunKannan/butterflyeffect.git
+# Make sure we're using the correct butterflyeffect branch
 cd butterflyeffect/code
 git checkout FullDynamic
 source scripts/setvars.sh
 
 set +x
-echo "You can now run tests. Make sure you change variable HOST in ~/butterflyeffect/code/scripts/setvars.sh to the IP of the server node for the Cassandra benchmark. Then run \"source ~/butterflyeffect/code/scripts/setvars.sh\" again."
+echo "You can now run tests using \"bash scripts/customTest.sh\". Make sure you change variable HOST in ~/butterflyeffect/code/scripts/setvars.sh to the IP of the server node for the Cassandra benchmark. Then run \"source ~/butterflyeffect/code/scripts/setvars.sh\" again."
 
 set +e
